@@ -54,7 +54,6 @@ export async function GET(req: Request) {
       .map((cat) => ({
         categoryId: cat.id,
         categoryName: cat.name,
-        emoji: cat.emoji,
         nominees: cat.nominees
           .map((nom) => ({
             nomineeId: nom.id,

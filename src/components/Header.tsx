@@ -6,9 +6,10 @@ interface ScreenHeaderProps {
   title: string;
   subtitle?: string;
   showBack?: boolean;
+  rightAction?: React.ReactNode;
 }
 
-export function ScreenHeader({ title, subtitle, showBack = true }: ScreenHeaderProps) {
+export function ScreenHeader({ title, subtitle, showBack = true, rightAction }: ScreenHeaderProps) {
   const router = useRouter();
 
   return (
@@ -18,10 +19,11 @@ export function ScreenHeader({ title, subtitle, showBack = true }: ScreenHeaderP
           <i className="ti ti-arrow-left" />
         </button>
       )}
-      <div>
+      <div className="flex-1">
         <div className="sh-title">{title}</div>
         {subtitle && <div className="sh-sub">{subtitle}</div>}
       </div>
+      {rightAction}
     </div>
   );
 }

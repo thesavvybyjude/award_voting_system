@@ -8,6 +8,7 @@ declare module '@paystack/inline-js' {
     channels?: string[];
     label?: string;
     callback?: (response: { reference: string }) => void;
+    onSuccess?: (transaction: Record<string, unknown>) => void;
     onClose?: () => void;
   }
 

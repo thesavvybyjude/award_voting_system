@@ -67,9 +67,23 @@ export default function SummaryPage() {
     );
   }
 
+  const handleClear = () => {
+    if (confirm("Clear all votes? This cannot be undone.")) {
+      clearSelections();
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-surface">
-      <ScreenHeader title="Summary" subtitle={`${totalVotes} vote${totalVotes !== 1 ? "s" : ""} selected`} />
+      <ScreenHeader 
+        title="Summary" 
+        subtitle={`${totalVotes} vote${totalVotes !== 1 ? "s" : ""} selected`}
+        rightAction={
+          <button onClick={handleClear} className="text-[12px] font-medium text-ink-muted hover:text-error transition-colors">
+            Clear all
+          </button>
+        }
+      />
 
       <div className="scroll-area px-5 pb-8">
         {/* Total Strip */}
