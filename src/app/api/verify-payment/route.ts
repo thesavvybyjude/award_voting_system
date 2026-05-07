@@ -22,6 +22,14 @@ export async function POST(req: Request) {
     const expectedAmountKobo = totalVotes * VOTE_PRICE_KOBO;
 
     // ── Verify with Paystack ────────────────────────────────────
+    if (!process.env.PAYSTACK_SECRET_KEY) {
+      console.error("PAYSTACK_SECRET_KEY not configured");
+      return NextResponse.json(
+        { success: false, error: "Server configuration error" },
+        { status: 500 }
+      );
+    }
+
     const paystackRes = await fetch(
       `https://api.paystack.co/transaction/verify/${reference}`,
       {
@@ -32,12 +40,26 @@ export async function POST(req: Request) {
     );
 
     const paystackData = await paystackRes.json();
+    console.log("Paystack verification result:", JSON.stringify(paystackData));
 
-    if (
-      !paystackData.status ||
-      paystackData.data?.status !== "success" ||
-      paystackData.data?.amount !== expectedAmountKobo
-    ) {
+    if (!paystackData.status) {
+      console.error("Paystack API error:", paystackData);
+      return NextResponse.json(
+        { success: false, error: "Payment verification failed" },
+        { status: 400 }
+      );
+    }
+
+    if (paystackData.data?.status !== "success") {
+      console.error("Payment not successful:", paystackData.data?.status);
+      return NextResponse.json(
+        { success: false, error: "Payment was not successful" },
+        { status: 400 }
+      );
+    }
+
+    if (paystackData.data?.amount !== expectedAmountKobo) {
+      console.error("Amount mismatch:", { expected: expectedAmountKobo, actual: paystackData.data?.amount });
       // Log failed attempt
       const supabase = createAdminClient();
       await supabase.from("transactions").insert({
@@ -49,13 +71,7 @@ export async function POST(req: Request) {
       });
 
       return NextResponse.json(
-        {
-          success: false,
-          error:
-            paystackData.data?.amount !== expectedAmountKobo
-              ? "Amount mismatch detected"
-              : "Payment verification failed",
-        },
+        { success: false, error: "Amount mismatch detected" },
         { status: 400 }
       );
     }
@@ -76,8 +92,16 @@ export async function POST(req: Request) {
       .select("id")
       .single();
 
-    if (txError || !transaction) {
+    if (txError) {
       console.error("Transaction insert error:", txError);
+      return NextResponse.json(
+        { success: false, error: "Failed to record transaction: " + txError.message },
+        { status: 500 }
+      );
+    }
+
+    if (!transaction) {
+      console.error("Transaction insert returned no data");
       return NextResponse.json(
         { success: false, error: "Failed to record transaction" },
         { status: 500 }
@@ -100,7 +124,7 @@ export async function POST(req: Request) {
       console.error("Votes insert error:", votesError);
       // Transaction is still recorded, but votes failed – flag for manual review
       return NextResponse.json(
-        { success: false, error: "Failed to record votes" },
+        { success: false, error: "Failed to record votes: " + votesError.message },
         { status: 500 }
       );
     }
