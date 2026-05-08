@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { VOTE_PRICE_NAIRA } from "@/lib/awards.config";
 import type { VoteSelection } from "@/types";
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const Flutterwave = require("flutterwave-node-v3");
 
 const flw = new Flutterwave(

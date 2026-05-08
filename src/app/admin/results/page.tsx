@@ -36,13 +36,16 @@ export default function RealtimeResultsPage() {
     finally { setLoading(false); }
   }, []);
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     const pin = sessionStorage.getItem("admin-pin");
     setAuthenticated(!!pin);
     setMounted(true);
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!mounted) return;
     if (!authenticated) return;
@@ -55,6 +58,7 @@ export default function RealtimeResultsPage() {
     channelRef.current = channel;
     return () => { if (channelRef.current) supabase.removeChannel(channelRef.current); };
   }, [authenticated, fetchResults, mounted]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handlePrint = () => {
     window.print();

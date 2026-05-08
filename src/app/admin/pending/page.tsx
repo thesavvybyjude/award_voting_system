@@ -31,11 +31,13 @@ export default function AdminPendingPage() {
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     const pin = sessionStorage.getItem("admin-pin");
     setAuthenticated(!!pin);
     setMounted(true);
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const fetchPending = useCallback(async () => {
     const pin = sessionStorage.getItem("admin-pin");
@@ -48,6 +50,7 @@ export default function AdminPendingPage() {
     finally { setLoading(false); }
   }, []);
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!mounted) return;
     if (!authenticated) return;
@@ -66,6 +69,7 @@ export default function AdminPendingPage() {
       if (channelRef.current) supabase.removeChannel(channelRef.current); 
     };
   }, [authenticated, fetchPending, mounted]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   if (!authenticated) return <PinGate onAuthenticated={() => setAuthenticated(true)} />;
 

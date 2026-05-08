@@ -22,12 +22,13 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const channelRef = useRef<RealtimeChannel | null>(null);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     const pin = sessionStorage.getItem("admin-pin");
     setAuthenticated(!!pin);
     setMounted(true);
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const fetchStats = useCallback(async () => {
     const pin = sessionStorage.getItem("admin-pin");
@@ -40,6 +41,7 @@ export default function AdminDashboard() {
     finally { setLoading(false); }
   }, []);
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!mounted) return;
     if (!authenticated) return;
@@ -59,6 +61,7 @@ export default function AdminDashboard() {
       if (channelRef.current) supabase.removeChannel(channelRef.current); 
     };
   }, [authenticated, fetchStats, mounted]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   if (!authenticated) return <PinGate onAuthenticated={() => setAuthenticated(true)} />;
 

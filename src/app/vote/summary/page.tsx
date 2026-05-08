@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useVote } from "@/contexts/VoteContext";
@@ -24,16 +24,21 @@ export default function SummaryPage() {
   const totalVotes = getTotalVotes();
   const totalAmountNaira = getTotalAmount() / 100;
 
-  const enabledProviders: Provider[] = [];
-  if (ENABLE_PAYSTACK) enabledProviders.push("paystack");
-  if (ENABLE_FLUTTERWAVE) enabledProviders.push("flutterwave");
-  if (ENABLE_TRANSFER) enabledProviders.push("transfer");
+  const enabledProviders = useMemo<Provider[]>(() => {
+    const providers: Provider[] = [];
+    if (ENABLE_PAYSTACK) providers.push("paystack");
+    if (ENABLE_FLUTTERWAVE) providers.push("flutterwave");
+    if (ENABLE_TRANSFER) providers.push("transfer");
+    return providers;
+  }, []);
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (enabledProviders.length === 1) {
       setSelectedProvider(enabledProviders[0]);
     }
   }, [enabledProviders]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const reference = selectedProvider === "paystack" 
     ? generatePsReference() 

@@ -14,7 +14,7 @@ interface CategoryCardProps {
 export function CategoryCard({ category, index }: CategoryCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedNominee, setSelectedNominee] = useState<string | null>(null);
-  const { selections, addVote, removeVote, getVotesForNominee } = useVote();
+  const { addVote, removeVote, getVotesForNominee } = useVote();
 
   
   const activeNominee = selectedNominee
