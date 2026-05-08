@@ -16,9 +16,9 @@ export const ENABLE_TRANSFER = true;
 
 // Bank Transfer Details
 export const BANK_TRANSFER_DETAILS = {
-  bankName: "GTBank",
-  accountNumber: "8126369366",
-  accountName: "Faculty Awards",
+  bankName: "Palmpay",
+  accountNumber: "9012607545",
+  accountName: "Jude Thompson",
   instructions: "Transfer the exact amount and click \"I've sent the money\" below. Your transfer will be reviewed and approved within 24 hours.",
 };
 
