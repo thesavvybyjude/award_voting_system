@@ -1143,3 +1143,84 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* ── Transaction Log Table ─────────────────────────── */
+.stat-card {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+.stat-card.success {
+  background: linear-gradient(135deg, #DCFCE7 0%, #F0FDF4 100%);
+  border-color: #86EFAC;
+}
+.stat-card.pending {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FFFBEB 100%);
+  border-color: #FCD34D;
+}
+.stat-label {
+  font-size: 10px;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 4px;
+}
+.stat-card.success .stat-value { color: #16A34A; }
+.stat-card.pending .stat-value { color: #D97706; }
+
+.table-container {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.transactions-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.transactions-table th {
+  background: var(--ink);
+  color: white;
+  padding: 12px 10px;
+  text-align: left;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.transactions-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--border-light);
+}
+.transactions-table tr:last-child td { border-bottom: none; }
+.transactions-table tr:hover { background: var(--surface-alt); }
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.status-badge.success { background: #DCFCE7; color: #16A34A; }
+.status-badge.pending { background: #FEF3C7; color: #D97706; }
+.status-badge.failed { background: #FEE2E2; color: #DC2626; }
+
+.provider-tag {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.provider-tag.paystack { background: #E0FFFE; color: #00C2A8; }
+.provider-tag.flutterwave { background: #FFF4E6; color: #E85D04; }
+.provider-tag.manual { background: #EFF6FF; color: #3B82F6; }

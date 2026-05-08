@@ -229,7 +229,7 @@ export default function ResultsPage() {
           )}
         </div>
 
-        <div className="atabs">
+<div className="atabs">
           <Link href="/admin" className="atab">
             <i className="ti ti-layout-dashboard" />
             <span>Overview</span>
@@ -241,6 +241,10 @@ export default function ResultsPage() {
           <Link href="/admin/pending" className="atab">
             <i className="ti ti-file-check" />
             <span>Review</span>
+          </Link>
+          <Link href="/admin/transactions" className="atab">
+            <i className="ti ti-receipt" />
+            <span>Transactions</span>
           </Link>
           <button className="atab" onClick={() => { sessionStorage.removeItem("admin-pin"); window.location.reload(); }}>
             <i className="ti ti-lock" />
