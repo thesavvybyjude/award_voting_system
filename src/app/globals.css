@@ -981,6 +981,23 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--ink);
   font-weight: 600;
 }
+.copy-btn {
+  background: var(--surface-alt);
+  border: none;
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--ink-light);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+}
+.copy-btn:hover {
+  background: var(--primary);
+  color: white;
+}
 .bank-account {
   font-family: var(--font-heading);
   letter-spacing: 0.05em;

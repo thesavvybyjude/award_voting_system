@@ -309,6 +309,13 @@ export default function SummaryPage() {
             </div>
             <div className="bank-detail-row">
               <span className="bank-label">Account Number</span>
+              <button 
+                onClick={() => { navigator.clipboard.writeText(BANK_TRANSFER_DETAILS.accountNumber); setToast({ message: "Account number copied!", type: "success" }); }}
+                className="copy-btn"
+                title="Copy"
+              >
+                <i className="ti ti-copy" style={{ fontSize: 14 }} />
+              </button>
               <span className="bank-value bank-account">{BANK_TRANSFER_DETAILS.accountNumber}</span>
             </div>
             <div className="bank-detail-row">
