@@ -2,6 +2,17 @@
 // This file is the single source of truth for all categories & nominees.
 // Update this file with your actual data before the event.
 
+import { 
+  ADMIN_PIN as DEFAULT_ADMIN_PIN, 
+  VOTE_PRICE_NAIRA as DEFAULT_VOTE_PRICE,
+  EVENT_NAME as DEFAULT_EVENT_NAME,
+  EVENT_TAGLINE as DEFAULT_TAGLINE,
+  ENABLE_TRANSFER as DEFAULT_ENABLE_TRANSFER,
+  BANK_TRANSFER_DETAILS as DEFAULT_BANK_DETAILS,
+  WHATSAPP_VERIFY_NUMBER as DEFAULT_WHATSAPP,
+  WHATSAPP_VERIFY_LINK as DEFAULT_WHATSAPP_LINK
+} from "./default-config";
+
 export interface NomineeConfig {
   id: string;
   name: string;
@@ -16,33 +27,40 @@ export interface CategoryConfig {
   nominees: NomineeConfig[];
 }
 
-export const VOTE_PRICE_NAIRA = Number(process.env.NEXT_PUBLIC_VOTE_PRICE_NAIRA) || 200;
-export const VOTE_PRICE_KOBO = VOTE_PRICE_NAIRA * 100;
-export const EVENT_NAME = "Faculty of Computing Awards 2026";
-export const EVENT_TAGLINE = "Vote for Your Favorites";
+// Use env vars if provided, otherwise fall back to defaults
+export const ADMIN_PIN = process.env.ADMIN_PIN || DEFAULT_ADMIN_PIN;
 
+export const VOTE_PRICE_NAIRA = Number(process.env.NEXT_PUBLIC_VOTE_PRICE_NAIRA) || DEFAULT_VOTE_PRICE;
+export const VOTE_PRICE_KOBO = VOTE_PRICE_NAIRA * 100;
+export const EVENT_NAME = process.env.NEXT_PUBLIC_EVENT_NAME || DEFAULT_EVENT_NAME;
+export const EVENT_TAGLINE = process.env.NEXT_PUBLIC_EVENT_TAGLINE || DEFAULT_TAGLINE;
+
+// Payment providers - check for real keys in env, otherwise use defaults
 const hasPaystackKeys = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY && 
-  process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY !== "pk_live_XXXXXXXXXXXXXXXX" &&
-  process.env.PAYSTACK_SECRET_KEY && 
-  process.env.PAYSTACK_SECRET_KEY !== "sk_live_XXXXXXXXXXXXXXXX";
+  !process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY.includes("XXXXXXXX") &&
+  process.env.PAYSTACK_SECRET_KEY &&
+  !process.env.PAYSTACK_SECRET_KEY.includes("XXXXXXXX");
 
 const hasFlutterwaveKeys = process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY && 
-  process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY !== "FLWPUBK-XXXXXXXXXXXXXXXX-X" &&
-  process.env.FLUTTERWAVE_SECRET_KEY && 
-  process.env.FLUTTERWAVE_SECRET_KEY !== "FLWSECK-XXXXXXXXXXXXXXXX-X";
+  !process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY.includes("XXXXXXXX") &&
+  process.env.FLUTTERWAVE_SECRET_KEY &&
+  !process.env.FLUTTERWAVE_SECRET_KEY.includes("XXXXXXXX");
 
-export const ENABLE_PAYSTACK = hasPaystackKeys && process.env.NEXT_PUBLIC_ENABLE_PAYSTACK !== "false";
-export const ENABLE_FLUTTERWAVE = hasFlutterwaveKeys && process.env.NEXT_PUBLIC_ENABLE_FLUTTERWAVE !== "false";
-export const ENABLE_TRANSFER = process.env.NEXT_PUBLIC_ENABLE_TRANSFER !== "false";
+export const ENABLE_PAYSTACK = hasPaystackKeys && (process.env.NEXT_PUBLIC_ENABLE_PAYSTACK !== "false");
+export const ENABLE_FLUTTERWAVE = hasFlutterwaveKeys && (process.env.NEXT_PUBLIC_ENABLE_FLUTTERWAVE !== "false");
+export const ENABLE_TRANSFER = process.env.NEXT_PUBLIC_ENABLE_TRANSFER !== "false" ? process.env.NEXT_PUBLIC_ENABLE_TRANSFER === "true" : DEFAULT_ENABLE_TRANSFER;
 
-export const BANK_TRANSFER_DETAILS = {
-  bankName: process.env.BANK_NAME || "Bank Name",
+// Bank transfer - use defaults from default-config.ts
+export const BANK_TRANSFER_DETAILS = process.env.BANK_NAME ? {
+  bankName: process.env.BANK_NAME,
   accountNumber: process.env.BANK_ACCOUNT_NUMBER || "0000000000",
   accountName: process.env.BANK_ACCOUNT_NAME || "Account Name",
   instructions: process.env.BANK_TRANSFER_INSTRUCTIONS || "Transfer the exact amount and click 'I've sent the money' below",
-};
+} : DEFAULT_BANK_DETAILS;
 
-export const WHATSAPP_VERIFY_NUMBER = process.env.WHATSAPP_VERIFY_NUMBER || "";
+// WhatsApp - use defaults from default-config.ts
+export const WHATSAPP_VERIFY_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_VERIFY_NUMBER || DEFAULT_WHATSAPP;
+export const WHATSAPP_VERIFY_LINK = process.env.NEXT_PUBLIC_WHATSAPP_VERIFY_LINK || DEFAULT_WHATSAPP_LINK;
 
 export const awardsConfig: CategoryConfig[] = [
   {

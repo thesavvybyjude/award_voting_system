@@ -73,3 +73,4 @@ CREATE POLICY "Public read votes" ON votes FOR SELECT TO anon USING (true);
 -- ── Enable Realtime ─────────────────────────────────────────────
 
 ALTER PUBLICATION supabase_realtime ADD TABLE votes;
+ALTER PUBLICATION supabase_realtime ADD TABLE transactions;

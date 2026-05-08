@@ -206,7 +206,7 @@ export default function SummaryPage() {
 
   const generateShareText = () => {
     const votesList = selections.map(s => `${s.nomineeName}: ${s.votes} vote(s)`).join(", ");
-    return `🏆 Faculty Awards 2026 - Payment Confirmation\n\n💰 Amount: ₦${totalAmountNaira.toLocaleString()}\n✅ Votes: ${totalVotes}\n📋 Ref: ${transferReference}\n\nSent to verify payment. Thank you!`;
+    return `🏆 Faculty Awards 2026 - Payment Confirmation\n\n💰 Amount: ₦${totalAmountNaira.toLocaleString()}\n✅ Votes: ${totalVotes} (${votesList})\n📋 Ref: ${transferReference}\n\nSent to verify payment. Thank you!`;
   };
 
   const handleShare = () => {
@@ -231,7 +231,7 @@ export default function SummaryPage() {
 
           <h1 className="text-[22px] text-ink font-semibold text-center mb-2">Transfer Submitted!</h1>
           <p className="text-[13px] text-ink-muted text-center mb-4">
-            Your transfer is being reviewed. You'll receive confirmation shortly.
+            Your transfer is being reviewed. You&apos;ll receive confirmation shortly.
           </p>
 
           <div className="receipt mt-4">

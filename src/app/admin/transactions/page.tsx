@@ -179,7 +179,7 @@ export default function TransactionsPage() {
   if (!authenticated) return <PinGate onAuthenticated={() => setAuthenticated(true)} />;
 
   const totalAmount = transactions.reduce((sum, t) => sum + (t.status === "success" ? t.amount_total / 100 : 0), 0);
-  const totalVotes = transactions.reduce((sum, t) => sum + (t.status === "success" ? t.total_votes : 0), 0);
+  const _totalVotes = transactions.reduce((sum, t) => sum + (t.status === "success" ? t.total_votes : 0), 0);
   const successCount = transactions.filter(t => t.status === "success").length;
   const pendingCount = transactions.filter(t => t.status === "pending").length;
 
