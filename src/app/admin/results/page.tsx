@@ -163,6 +163,10 @@ export default function RealtimeResultsPage() {
             <i className="ti ti-trophy" />
             <span>Results</span>
           </button>
+          <Link href="/admin/pending" className="atab">
+            <i className="ti ti-file-check" />
+            <span>Review</span>
+          </Link>
           <button className="atab" onClick={() => { sessionStorage.removeItem("admin-pin"); window.location.reload(); }}>
             <i className="ti ti-lock" />
             <span>Lock</span>

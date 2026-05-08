@@ -871,7 +871,7 @@ h1, h2, h3, h4, h5, h6 {
   cursor: pointer;
   transition: all 0.2s ease;
 }
-.provider-btn:hover {
+.provider-btn:hover:not(:disabled) {
   background: var(--surface-alt2);
   border-color: var(--border);
 }
@@ -880,6 +880,23 @@ h1, h2, h3, h4, h5, h6 {
   border-color: var(--ink);
   color: var(--ink);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.provider-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: var(--surface-alt);
+}
+.provider-btn.paystack.active {
+  border-color: var(--paystack);
+  box-shadow: 0 2px 8px rgba(0, 194, 168, 0.2);
+}
+.provider-btn.flutterwave.active {
+  border-color: #E85D04;
+  box-shadow: 0 2px 8px rgba(232, 93, 4, 0.2);
+}
+.provider-btn.transfer.active {
+  border-color: #3B82F6;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
 }
 .provider-icon {
   font-size: 18px;

@@ -44,11 +44,16 @@ function SuccessContent() {
       <h1 className="text-[26px] text-ink font-semibold mb-2 animate-fade-in" style={{ animationDelay: "0.1s", letterSpacing: "-0.01em" }}>
         {pending ? "Awaiting Confirmation" : "Votes Confirmed"}
       </h1>
-      <p className="text-[13px] text-ink-muted mb-6 animate-fade-in" style={{ animationDelay: "0.15s" }}>
+      <p className="text-[13px] text-ink-muted mb-2 animate-fade-in" style={{ animationDelay: "0.15s" }}>
         {pending 
-          ? "Your transfer is being reviewed. You'll receive confirmation shortly."
+          ? "Your transfer is being reviewed."
           : "Your votes have been recorded successfully."}
       </p>
+      {pending && (
+        <p className="text-[12px] text-ink-light mb-6 animate-fade-in" style={{ animationDelay: "0.18s" }}>
+          Transfer will be reviewed and votes updated once confirmed.
+        </p>
+      )}
 
       {/* Receipt */}
       {loading ? (

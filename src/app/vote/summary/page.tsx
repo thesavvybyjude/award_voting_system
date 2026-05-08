@@ -295,40 +295,38 @@ export default function SummaryPage() {
           </div>
         </div>
 
-        {enabledProviders.length > 1 && (
-          <div className="provider-selector mb-4 animate-fade-in" style={{ animationDelay: "0.15s" }}>
-            <label className="text-[13px] font-medium text-ink-muted mb-2 block">Select Payment Method</label>
-            <div className="provider-grid">
-              {ENABLE_PAYSTACK && (
-                <button
-                  onClick={() => setSelectedProvider("paystack")}
-                  className={`provider-btn ${selectedProvider === "paystack" ? "active" : ""}`}
-                >
-                  <span className="provider-icon">💳</span>
-                  <span>Card</span>
-                </button>
-              )}
-              {ENABLE_FLUTTERWAVE && (
-                <button
-                  onClick={() => setSelectedProvider("flutterwave")}
-                  className={`provider-btn ${selectedProvider === "flutterwave" ? "active" : ""}`}
-                >
-                  <span className="provider-icon">⚡</span>
-                  <span>Flutterwave</span>
-                </button>
-              )}
-              {ENABLE_TRANSFER && (
-                <button
-                  onClick={() => setSelectedProvider("transfer")}
-                  className={`provider-btn ${selectedProvider === "transfer" ? "active" : ""}`}
-                >
-                  <span className="provider-icon">🏦</span>
-                  <span>Transfer</span>
-                </button>
-              )}
-            </div>
+        <div className="provider-selector mb-4 animate-fade-in" style={{ animationDelay: "0.15s" }}>
+          <label className="text-[13px] font-medium text-ink-muted mb-2 block">Select Payment Method</label>
+          <div className="provider-grid">
+            <button
+              onClick={() => ENABLE_PAYSTACK && setSelectedProvider("paystack")}
+              disabled={!ENABLE_PAYSTACK}
+              className={`provider-btn paystack ${selectedProvider === "paystack" ? "active" : ""} ${!ENABLE_PAYSTACK ? "disabled" : ""}`}
+            >
+              <span className="provider-icon">{ENABLE_PAYSTACK ? "💳" : "🔒"}</span>
+              <span>{ENABLE_PAYSTACK ? "Card" : "Card"}</span>
+            </button>
+            <button
+              onClick={() => ENABLE_FLUTTERWAVE && setSelectedProvider("flutterwave")}
+              disabled={!ENABLE_FLUTTERWAVE}
+              className={`provider-btn flutterwave ${selectedProvider === "flutterwave" ? "active" : ""} ${!ENABLE_FLUTTERWAVE ? "disabled" : ""}`}
+            >
+              <span className="provider-icon">{ENABLE_FLUTTERWAVE ? "⚡" : "🔒"}</span>
+              <span>{ENABLE_FLUTTERWAVE ? "Flutterwave" : "Flutterwave"}</span>
+            </button>
+            <button
+              onClick={() => ENABLE_TRANSFER && setSelectedProvider("transfer")}
+              disabled={!ENABLE_TRANSFER}
+              className={`provider-btn transfer ${selectedProvider === "transfer" ? "active" : ""} ${!ENABLE_TRANSFER ? "disabled" : ""}`}
+            >
+              <span className="provider-icon">{ENABLE_TRANSFER ? "🏦" : "🔒"}</span>
+              <span>Transfer</span>
+            </button>
           </div>
-        )}
+          {enabledProviders.length === 0 && (
+            <p className="text-[12px] text-error mt-2 text-center">No payment methods available. Please contact support.</p>
+          )}
+        </div>
 
         <div className="anon-note mb-5 animate-fade-in" style={{ animationDelay: "0.25s" }}>
           <i className="ti ti-lock" style={{ fontSize: 14 }} />

@@ -149,10 +149,10 @@ export default function AdminPendingPage() {
           <i className="ti ti-trophy" />
           <span>Results</span>
         </Link>
-        <button className="atab on">
-          <i className="ti ti-clock" />
-          <span>Pending</span>
-        </button>
+        <Link href="/admin/pending" className="atab on">
+          <i className="ti ti-file-check" />
+          <span>Review</span>
+        </Link>
         <button className="atab" onClick={() => { sessionStorage.removeItem("admin-pin"); window.location.reload(); }}>
           <i className="ti ti-lock" />
           <span>Lock</span>
