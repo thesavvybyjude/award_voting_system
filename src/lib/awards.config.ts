@@ -35,7 +35,15 @@ export const VOTE_PRICE_KOBO = VOTE_PRICE_NAIRA * 100;
 export const EVENT_NAME = process.env.NEXT_PUBLIC_EVENT_NAME || DEFAULT_EVENT_NAME;
 export const EVENT_TAGLINE = process.env.NEXT_PUBLIC_EVENT_TAGLINE || DEFAULT_TAGLINE;
 
-// Payment providers - check for real keys in env, otherwise use defaults
+// Payment providers - check env override first, otherwise use default-config.ts
+// Env override: set NEXT_PUBLIC_ENABLE_XXX=true to enable, false to disable
+// If env not set, use default-config.ts values
+
+const envPaystack = process.env.NEXT_PUBLIC_ENABLE_PAYSTACK;
+const envFlutterwave = process.env.NEXT_PUBLIC_ENABLE_FLUTTERWAVE;
+const envTransfer = process.env.NEXT_PUBLIC_ENABLE_TRANSFER;
+
+// Paystack: only enabled if env=true OR (has real keys AND env not false)
 const hasPaystackKeys = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY && 
   !process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY.includes("XXXXXXXX") &&
   process.env.PAYSTACK_SECRET_KEY &&
@@ -46,12 +54,9 @@ const hasFlutterwaveKeys = process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY &&
   process.env.FLUTTERWAVE_SECRET_KEY &&
   !process.env.FLUTTERWAVE_SECRET_KEY.includes("XXXXXXXX");
 
-export const ENABLE_PAYSTACK = hasPaystackKeys && (process.env.NEXT_PUBLIC_ENABLE_PAYSTACK !== "false");
-export const ENABLE_FLUTTERWAVE = hasFlutterwaveKeys && (process.env.NEXT_PUBLIC_ENABLE_FLUTTERWAVE !== "false");
-
-const envTransfer = process.env.NEXT_PUBLIC_ENABLE_TRANSFER;
-const hasEnvTransfer = envTransfer === "true" || envTransfer === "false";
-export const ENABLE_TRANSFER = hasEnvTransfer ? envTransfer === "true" : DEFAULT_ENABLE_TRANSFER;
+export const ENABLE_PAYSTACK = envPaystack === "true" || (hasPaystackKeys && envPaystack !== "false");
+export const ENABLE_FLUTTERWAVE = envFlutterwave === "true" || (hasFlutterwaveKeys && envFlutterwave !== "false");
+export const ENABLE_TRANSFER = envTransfer === "true" ? true : envTransfer === "false" ? false : DEFAULT_ENABLE_TRANSFER;
 
 // Bank transfer - use defaults from default-config.ts
 export const BANK_TRANSFER_DETAILS = process.env.BANK_NAME ? {
