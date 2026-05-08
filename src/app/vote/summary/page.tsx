@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useVote } from "@/contexts/VoteContext";
-import { VOTE_PRICE_NAIRA, ENABLE_PAYSTACK, ENABLE_FLUTTERWAVE, ENABLE_TRANSFER, BANK_TRANSFER_DETAILS } from "@/lib/awards.config";
+import { VOTE_PRICE_NAIRA, ENABLE_PAYSTACK, ENABLE_FLUTTERWAVE, ENABLE_TRANSFER, BANK_TRANSFER_DETAILS, WHATSAPP_VERIFY_NUMBER } from "@/lib/awards.config";
 import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import { generateReference as generateFwReference } from "@/lib/flutterwave";
 import { openPaystackPopup, generateReference as generatePsReference } from "@/lib/paystack";
@@ -206,26 +206,17 @@ export default function SummaryPage() {
 
   const generateShareText = () => {
     const votesList = selections.map(s => `${s.nomineeName}: ${s.votes} vote(s)`).join(", ");
-    return `🏆 Faculty of Computing Awards 2026\n\n💰 Payment: ₦${totalAmountNaira.toLocaleString()}\n📋 Votes: ${totalVotes}\n🔖 Ref: ${transferReference}\n\nNominees:\n${votesList}\n\n#FacultyAwards2026`;
+    return `🏆 Faculty Awards 2026 - Payment Confirmation\n\n💰 Amount: ₦${totalAmountNaira.toLocaleString()}\n✅ Votes: ${totalVotes}\n📋 Ref: ${transferReference}\n\nSent to verify payment. Thank you!`;
   };
 
-  const handleShare = async () => {
-    const text = generateShareText();
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "Faculty Awards Payment",
-          text: text,
-        });
-      } catch (err) {
-        // User cancelled or error
-        console.log("Share cancelled");
-      }
-    } else {
-      // Fallback: copy to clipboard
-      await navigator.clipboard.writeText(text);
-      setToast({ message: "Receipt copied to clipboard!", type: "success" });
+  const handleShare = () => {
+    if (!WHATSAPP_VERIFY_NUMBER) {
+      setToast({ message: "WhatsApp verification not configured", type: "error" });
+      return;
     }
+    const text = encodeURIComponent(generateShareText());
+    const whatsappUrl = `https://wa.me/${WHATSAPP_VERIFY_NUMBER}?text=${text}`;
+    window.open(whatsappUrl, "_blank");
   };
 
   if (showTransferSuccess && transferReference) {
@@ -239,7 +230,7 @@ export default function SummaryPage() {
           </div>
 
           <h1 className="text-[22px] text-ink font-semibold text-center mb-2">Transfer Submitted!</h1>
-          <p className="text-[13px] text-ink-muted text-center mb-6">
+          <p className="text-[13px] text-ink-muted text-center mb-4">
             Your transfer is being reviewed. You'll receive confirmation shortly.
           </p>
 
@@ -258,12 +249,20 @@ export default function SummaryPage() {
             </div>
           </div>
 
+          <div className="whatsapp-note mt-5 animate-fade-in">
+            <i className="ti ti-brand-whatsapp" style={{ fontSize: 18 }} />
+            <div>
+              <span className="whatsapp-note-title">Send receipt to verify payment</span>
+              <span className="whatsapp-note-sub">Click the button below to send your payment confirmation</span>
+            </div>
+          </div>
+
           <button
             onClick={handleShare}
-            className="btn-share mt-5 animate-fade-in"
+            className="btn-whatsapp mt-4 animate-fade-in"
           >
-            <i className="ti ti-share" style={{ fontSize: 16 }} />
-            Share Receipt
+            <i className="ti ti-send" style={{ fontSize: 16 }} />
+            Send to Verify Payment
           </button>
 
           <Link href="/" className="btn-outline w-full justify-center mt-3">

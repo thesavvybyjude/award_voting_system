@@ -42,6 +42,8 @@ export const BANK_TRANSFER_DETAILS = {
   instructions: process.env.BANK_TRANSFER_INSTRUCTIONS || "Transfer the exact amount and click 'I've sent the money' below",
 };
 
+export const WHATSAPP_VERIFY_NUMBER = process.env.WHATSAPP_VERIFY_NUMBER || "";
+
 export const awardsConfig: CategoryConfig[] = [
   {
     id: "most-popular-female",
