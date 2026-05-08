@@ -11,7 +11,7 @@ export const EVENT_TAGLINE = "Vote for Your Favorites";
 
 // Payment Provider Toggles
 export const ENABLE_PAYSTACK = false;
-export const ENABLE_FLUTTERWAVE = false;
+export const ENABLE_FLUTTERWAVE = true;
 export const ENABLE_TRANSFER = true;
 
 // Bank Transfer Details
