@@ -18,7 +18,7 @@ export default function RootLayout({
       <head>
         <link
           rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"
+          href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/dist/tabler-icons.min.css"
         />
         <link
           href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap"
