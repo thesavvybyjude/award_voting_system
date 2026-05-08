@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
-/* ── Tabler Icons (loaded in layout.tsx via link tag) ── */
+/* ── Tabler Icons fallback ── */
+@font-face {
+  font-family: 'Tabler Icons';
+  src: local('Tabler Icons');
+}
 
 :root {
   --ink: #111111;
