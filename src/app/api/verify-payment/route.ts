@@ -3,17 +3,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { VOTE_PRICE_NAIRA } from "@/lib/awards.config";
 import type { VoteSelection } from "@/types";
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const Flutterwave = require("flutterwave-node-v3");
-
-const flw = new Flutterwave(
-  process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY,
-  process.env.FLUTTERWAVE_SECRET_KEY
-);
-
 type Provider = "paystack" | "flutterwave";
 
-async function verifyPaystack(reference: string, expectedAmount: number): Promise<{ success: boolean; data?: unknown; error?: string }> {
+type VerifyResult = { success: true; data?: unknown; error?: string } | { success: false; data?: unknown; error: string };
+
+async function verifyPaystack(reference: string, expectedAmount: number): Promise<VerifyResult> {
   if (!process.env.PAYSTACK_SECRET_KEY) {
     return { success: false, error: "Paystack not configured" };
   }
@@ -42,8 +36,19 @@ async function verifyPaystack(reference: string, expectedAmount: number): Promis
   }
 }
 
-async function verifyFlutterwave(transactionId: string, reference: string, expectedAmount: number): Promise<{ success: boolean; data?: unknown; error?: string }> {
+async function verifyFlutterwave(transactionId: string, reference: string, expectedAmount: number): Promise<VerifyResult> {
+  const publicKey = process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY;
+  const secretKey = process.env.FLUTTERWAVE_SECRET_KEY;
+
+  if (!publicKey || !secretKey) {
+    return { success: false, error: "Flutterwave not configured" };
+  }
+
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const Flutterwave = require("flutterwave-node-v3");
+    const flw = new Flutterwave(publicKey, secretKey);
+    
     const response = await flw.Transaction.verify({ id: transactionId.toString(), tx_ref: reference });
     console.log("Flutterwave verification result:", JSON.stringify(response));
 
@@ -59,7 +64,7 @@ async function verifyFlutterwave(transactionId: string, reference: string, expec
     return { success: true, data: response.data };
   } catch (err) {
     console.error("Flutterwave verification error:", err);
-    return { success: false, error: "Verification failed" };
+    return { success: false, error: "Verification failed: " + (err instanceof Error ? err.message : "Unknown error") };
   }
 }
 
@@ -91,7 +96,7 @@ export async function POST(req: Request) {
 
     const paymentProvider = provider;
 
-    let verifyResult: { success: boolean; data?: unknown; error?: string };
+    let verifyResult: VerifyResult;
 
     if (paymentProvider === "paystack") {
       verifyResult = await verifyPaystack(reference, expectedAmountNaira);
