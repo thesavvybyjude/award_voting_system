@@ -7,6 +7,8 @@ import {
   VOTE_PRICE_NAIRA as DEFAULT_VOTE_PRICE,
   EVENT_NAME as DEFAULT_EVENT_NAME,
   EVENT_TAGLINE as DEFAULT_TAGLINE,
+  ENABLE_PAYSTACK as DEFAULT_ENABLE_PAYSTACK,
+  ENABLE_FLUTTERWAVE as DEFAULT_ENABLE_FLUTTERWAVE,
   ENABLE_TRANSFER as DEFAULT_ENABLE_TRANSFER,
   BANK_TRANSFER_DETAILS as DEFAULT_BANK_DETAILS,
   WHATSAPP_VERIFY_NUMBER as DEFAULT_WHATSAPP,
@@ -35,28 +37,12 @@ export const VOTE_PRICE_KOBO = VOTE_PRICE_NAIRA * 100;
 export const EVENT_NAME = process.env.NEXT_PUBLIC_EVENT_NAME || DEFAULT_EVENT_NAME;
 export const EVENT_TAGLINE = process.env.NEXT_PUBLIC_EVENT_TAGLINE || DEFAULT_TAGLINE;
 
-// Payment providers - check env override first, otherwise use default-config.ts
-// Env override: set NEXT_PUBLIC_ENABLE_XXX=true to enable, false to disable
-// If env not set, use default-config.ts values
+// Payment providers - use default-config.ts values only
+// Change true/false in default-config.ts to enable/disable
 
-const envPaystack = process.env.NEXT_PUBLIC_ENABLE_PAYSTACK;
-const envFlutterwave = process.env.NEXT_PUBLIC_ENABLE_FLUTTERWAVE;
-const envTransfer = process.env.NEXT_PUBLIC_ENABLE_TRANSFER;
-
-// Paystack: only enabled if env=true OR (has real keys AND env not false)
-const hasPaystackKeys = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY && 
-  !process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY.includes("XXXXXXXX") &&
-  process.env.PAYSTACK_SECRET_KEY &&
-  !process.env.PAYSTACK_SECRET_KEY.includes("XXXXXXXX");
-
-const hasFlutterwaveKeys = process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY && 
-  !process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY.includes("XXXXXXXX") &&
-  process.env.FLUTTERWAVE_SECRET_KEY &&
-  !process.env.FLUTTERWAVE_SECRET_KEY.includes("XXXXXXXX");
-
-export const ENABLE_PAYSTACK = envPaystack === "true" || (hasPaystackKeys && envPaystack !== "false");
-export const ENABLE_FLUTTERWAVE = envFlutterwave === "true" || (hasFlutterwaveKeys && envFlutterwave !== "false");
-export const ENABLE_TRANSFER = envTransfer === "true" ? true : envTransfer === "false" ? false : DEFAULT_ENABLE_TRANSFER;
+export const ENABLE_PAYSTACK = DEFAULT_ENABLE_PAYSTACK;
+export const ENABLE_FLUTTERWAVE = DEFAULT_ENABLE_FLUTTERWAVE;
+export const ENABLE_TRANSFER = DEFAULT_ENABLE_TRANSFER;
 
 // Bank transfer - use defaults from default-config.ts
 export const BANK_TRANSFER_DETAILS = process.env.BANK_NAME ? {
