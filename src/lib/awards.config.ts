@@ -48,7 +48,10 @@ const hasFlutterwaveKeys = process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY &&
 
 export const ENABLE_PAYSTACK = hasPaystackKeys && (process.env.NEXT_PUBLIC_ENABLE_PAYSTACK !== "false");
 export const ENABLE_FLUTTERWAVE = hasFlutterwaveKeys && (process.env.NEXT_PUBLIC_ENABLE_FLUTTERWAVE !== "false");
-export const ENABLE_TRANSFER = process.env.NEXT_PUBLIC_ENABLE_TRANSFER !== "false" ? process.env.NEXT_PUBLIC_ENABLE_TRANSFER === "true" : DEFAULT_ENABLE_TRANSFER;
+
+const envTransfer = process.env.NEXT_PUBLIC_ENABLE_TRANSFER;
+const hasEnvTransfer = envTransfer === "true" || envTransfer === "false";
+export const ENABLE_TRANSFER = hasEnvTransfer ? envTransfer === "true" : DEFAULT_ENABLE_TRANSFER;
 
 // Bank transfer - use defaults from default-config.ts
 export const BANK_TRANSFER_DETAILS = process.env.BANK_NAME ? {
