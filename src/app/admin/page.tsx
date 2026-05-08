@@ -14,12 +14,16 @@ interface Stats {
 
 export default function AdminDashboard() {
   const [authenticated, setAuthenticated] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     const pin = sessionStorage.getItem("admin-pin");
-    if (pin) setAuthenticated(true);
+    setAuthenticated(!!pin);
+    setMounted(true);
   }, []);
 
   const fetchStats = useCallback(async () => {
@@ -34,12 +38,14 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => {
+    if (!mounted) return;
     if (authenticated) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchStats();
       const iv = setInterval(fetchStats, 15000);
       return () => clearInterval(iv);
     }
-  }, [authenticated, fetchStats]);
+  }, [authenticated, fetchStats, mounted]);
 
   if (!authenticated) return <PinGate onAuthenticated={() => setAuthenticated(true)} />;
 
@@ -63,8 +69,19 @@ export default function AdminDashboard() {
           <span className="w-[6px] h-[6px] rounded-full bg-live" />
           <span className="text-[10px] text-live font-medium uppercase tracking-wider">Live</span>
         </div>
-        <h1 className="text-[24px] text-ink font-semibold" style={{ letterSpacing: "-0.01em" }}>Admin Dashboard</h1>
-        <p className="text-[12px] text-ink-light font-medium">Real-time voting statistics</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-[24px] text-ink font-semibold" style={{ letterSpacing: "-0.01em" }}>Admin Dashboard</h1>
+            <p className="text-[12px] text-ink-light font-medium">Real-time voting statistics</p>
+          </div>
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-1.5 bg-ink text-white text-[11px] font-medium px-3 py-2 rounded-lg"
+          >
+            <i className="ti ti-printer" style={{ fontSize: 14 }} />
+            Print
+          </button>
+        </div>
       </div>
 
       <div className="scroll-area px-5 pb-24">

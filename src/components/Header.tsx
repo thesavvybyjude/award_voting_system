@@ -6,16 +6,25 @@ interface ScreenHeaderProps {
   title: string;
   subtitle?: string;
   showBack?: boolean;
+  backAction?: () => void;
   rightAction?: React.ReactNode;
 }
 
-export function ScreenHeader({ title, subtitle, showBack = true, rightAction }: ScreenHeaderProps) {
+export function ScreenHeader({ title, subtitle, showBack = true, backAction, rightAction }: ScreenHeaderProps) {
   const router = useRouter();
+
+  const handleBack = () => {
+    if (backAction) {
+      backAction();
+    } else {
+      router.back();
+    }
+  };
 
   return (
     <div className="sh">
       {showBack && (
-        <button onClick={() => router.back()} className="sh-back" aria-label="Go back">
+        <button onClick={handleBack} className="sh-back" aria-label="Go back">
           <i className="ti ti-arrow-left" />
         </button>
       )}

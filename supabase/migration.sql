@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS categories (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   type TEXT NOT NULL DEFAULT 'single' CHECK (type IN ('single', 'top2', 'duo')),
-  emoji TEXT DEFAULT '🏆',
+  emoji TEXT DEFAULT '🏏',
   display_order INT NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT now()
 );
@@ -23,15 +23,20 @@ CREATE TABLE IF NOT EXISTS nominees (
 );
 CREATE INDEX IF NOT EXISTS idx_nominees_category ON nominees(category_id);
 
--- Transactions table (one per Paystack payment)
+-- Transactions table (one per payment)
 CREATE TABLE IF NOT EXISTS transactions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   reference TEXT UNIQUE NOT NULL,
   amount_total INT NOT NULL,          -- in kobo
   total_votes INT NOT NULL,
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'success', 'failed')),
+  payment_provider TEXT DEFAULT 'flutterwave' CHECK (payment_provider IN ('paystack', 'flutterwave', 'manual')),
+  vote_selections JSONB,              -- stores selections for manual transactions (before approval)
+  payer_name TEXT,                    -- optional: name of person who transferred
+  payer_phone TEXT,                   -- optional: phone of person who transferred
   paystack_response JSONB,
-  created_at TIMESTAMPTZ DEFAULT now()
+  created_at TIMESTAMPTZ DEFAULT now(),
+  approved_at TIMESTAMPTZ             -- when admin approved manual payment
 );
 CREATE INDEX IF NOT EXISTS idx_transactions_reference ON transactions(reference);
 CREATE INDEX IF NOT EXISTS idx_transactions_status ON transactions(status);

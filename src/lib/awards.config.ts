@@ -16,10 +16,31 @@ export interface CategoryConfig {
   nominees: NomineeConfig[];
 }
 
-export const VOTE_PRICE_NAIRA = 200;
+export const VOTE_PRICE_NAIRA = Number(process.env.NEXT_PUBLIC_VOTE_PRICE_NAIRA) || 200;
 export const VOTE_PRICE_KOBO = VOTE_PRICE_NAIRA * 100;
 export const EVENT_NAME = "Faculty of Computing Awards 2026";
 export const EVENT_TAGLINE = "Vote for Your Favorites";
+
+const hasPaystackKeys = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY && 
+  process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY !== "pk_live_XXXXXXXXXXXXXXXX" &&
+  process.env.PAYSTACK_SECRET_KEY && 
+  process.env.PAYSTACK_SECRET_KEY !== "sk_live_XXXXXXXXXXXXXXXX";
+
+const hasFlutterwaveKeys = process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY && 
+  process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY !== "FLWPUBK-XXXXXXXXXXXXXXXX-X" &&
+  process.env.FLUTTERWAVE_SECRET_KEY && 
+  process.env.FLUTTERWAVE_SECRET_KEY !== "FLWSECK-XXXXXXXXXXXXXXXX-X";
+
+export const ENABLE_PAYSTACK = hasPaystackKeys && process.env.NEXT_PUBLIC_ENABLE_PAYSTACK !== "false";
+export const ENABLE_FLUTTERWAVE = hasFlutterwaveKeys && process.env.NEXT_PUBLIC_ENABLE_FLUTTERWAVE !== "false";
+export const ENABLE_TRANSFER = process.env.NEXT_PUBLIC_ENABLE_TRANSFER !== "false";
+
+export const BANK_TRANSFER_DETAILS = {
+  bankName: process.env.BANK_NAME || "Bank Name",
+  accountNumber: process.env.BANK_ACCOUNT_NUMBER || "0000000000",
+  accountName: process.env.BANK_ACCOUNT_NAME || "Account Name",
+  instructions: process.env.BANK_TRANSFER_INSTRUCTIONS || "Transfer the exact amount and click 'I've sent the money' below",
+};
 
 export const awardsConfig: CategoryConfig[] = [
   {

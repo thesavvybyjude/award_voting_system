@@ -421,6 +421,27 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--ink);
   background: var(--surface-alt2);
 }
+.btn-outline-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--ink-muted);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+.btn-outline-secondary:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+  background: var(--surface-alt2);
+}
 
 .btn-paystack {
   display: flex;
@@ -443,6 +464,29 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 0.95; 
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(0, 194, 168, 0.3);
+}
+
+.btn-flutterwave {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  background: linear-gradient(135deg, #E85D04 0%, #DC2F02 100%);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(232, 93, 4, 0.25);
+}
+.btn-flutterwave:hover { 
+  opacity: 0.95; 
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(232, 93, 4, 0.3);
 }
 
 /* ── Total Strip ──────────────────────────────────── */
@@ -563,6 +607,10 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 28px;
   margin: 0 auto 1.5rem;
   box-shadow: 0 8px 24px rgba(17, 17, 17, 0.25);
+}
+.success-check.pending {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.25);
 }
 .receipt {
   border: 1px solid var(--border-light);
@@ -795,6 +843,102 @@ h1, h2, h3, h4, h5, h6 {
 .animate-fade-in { animation: fadeIn 0.4s ease-out both; }
 .animate-scale-in { animation: scaleIn 0.3s ease-out both; }
 
+/* ── Provider Selector ─────────────────────────────── */
+.provider-selector {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 1rem;
+}
+.provider-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.provider-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 10px;
+  background: var(--surface-alt);
+  border: 1.5px solid var(--border-light);
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-light);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.provider-btn:hover {
+  background: var(--surface-alt2);
+  border-color: var(--border);
+}
+.provider-btn.active {
+  background: var(--white);
+  border-color: var(--ink);
+  color: var(--ink);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.provider-icon {
+  font-size: 18px;
+}
+
+/* ── Bank Transfer ─────────────────────────────────── */
+.transfer-card {
+  background: linear-gradient(135deg, var(--ink) 0%, #2a2a2a 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+.transfer-amount-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.transfer-amount {
+  font-family: var(--font-heading);
+  font-size: 36px;
+  color: white;
+  letter-spacing: -0.02em;
+}
+.bank-details {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.bank-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-light);
+}
+.bank-detail-row:last-child { border-bottom: none; }
+.bank-label {
+  font-size: 13px;
+  color: var(--ink-light);
+  font-weight: 500;
+}
+.bank-value {
+  font-size: 15px;
+  color: var(--ink);
+  font-weight: 600;
+}
+.bank-account {
+  font-family: var(--font-heading);
+  letter-spacing: 0.05em;
+}
+.transfer-note {
+  font-size: 13px;
+  color: var(--ink-light);
+  text-align: center;
+  padding: 0 1rem;
+}
+
 /* ── Toast ────────────────────────────────────────── */
 .toast {
   position: fixed;
@@ -814,4 +958,84 @@ h1, h2, h3, h4, h5, h6 {
 .toast.error { 
   background: var(--error);
   box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+}
+
+/* ── Print Styles ──────────────────────────────────── */
+@media print {
+  body { background: white !important; }
+  .scroll-area { overflow: visible !important; }
+  .atabs { display: none !important; }
+  .no-print { display: none !important; }
+}
+
+/* ── Pending Card ─────────────────────────────────── */
+.pending-card {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+.pending-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.pending-ref {
+  font-size: 12px;
+  font-family: monospace;
+  color: var(--ink-light);
+}
+.pending-amount {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.pending-meta {
+  font-size: 11px;
+  color: var(--ink-muted);
+  margin-bottom: 8px;
+}
+.pending-payer {
+  font-size: 12px;
+  color: var(--ink);
+  font-weight: 500;
+  padding: 6px 10px;
+  background: var(--surface-alt);
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+.pending-votes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.pending-vote-tag {
+  font-size: 11px;
+  padding: 4px 8px;
+  background: var(--surface-alt2);
+  border-radius: 4px;
+  color: var(--ink-light);
+}
+.pending-approve-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #22C55E 0%, #16a34a 100%);
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.pending-approve-btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+.pending-approve-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

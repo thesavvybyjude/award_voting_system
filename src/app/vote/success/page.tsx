@@ -14,30 +14,40 @@ interface TransactionDetails {
 function SuccessContent() {
   const searchParams = useSearchParams();
   const ref = searchParams.get("ref");
+  const pending = searchParams.get("pending") === "true";
   const [details, setDetails] = useState<TransactionDetails | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !ref);
 
   useEffect(() => {
-    if (!ref) { setLoading(false); return; }
-    fetch(`/api/transaction/${ref}`)
-      .then((r) => r.json())
-      .then((d) => { if (d.success) setDetails(d.transaction); })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    if (!ref) return;
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`/api/transaction/${ref}`);
+        const data = await response.json();
+        if (data.success) {
+          setDetails(data.transaction);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, [ref]);
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 text-center">
-      {/* Check */}
-      <div className="success-check animate-scale-in">
-        <i className="ti ti-check" />
+      {/* Check or Pending Icon */}
+      <div className={`success-check animate-scale-in ${pending ? "pending" : ""}`}>
+        <i className={`ti ${pending ? "ti-clock" : "ti-check"}`} />
       </div>
 
       <h1 className="text-[26px] text-ink font-semibold mb-2 animate-fade-in" style={{ animationDelay: "0.1s", letterSpacing: "-0.01em" }}>
-        Votes Confirmed
+        {pending ? "Awaiting Confirmation" : "Votes Confirmed"}
       </h1>
       <p className="text-[13px] text-ink-muted mb-6 animate-fade-in" style={{ animationDelay: "0.15s" }}>
-        Your votes have been recorded successfully.
+        {pending 
+          ? "Your transfer is being reviewed. You'll receive confirmation shortly."
+          : "Your votes have been recorded successfully."}
       </p>
 
       {/* Receipt */}
@@ -79,10 +89,16 @@ function SuccessContent() {
 
       {/* Actions */}
       <div className="mt-6 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-        <Link href="/" className="btn-outline">
-          <i className="ti ti-refresh" style={{ fontSize: 14 }} />
-          Vote again
-        </Link>
+        <div className="flex flex-col gap-3 mt-6 animate-fade-in" style={{ animationDelay: "0.3s" }}>
+          <Link href="/vote" className="btn-outline">
+            <i className="ti ti-refresh" style={{ fontSize: 14 }} />
+            Vote again
+          </Link>
+          <Link href="/" className="btn-outline-secondary">
+            <i className="ti ti-home" style={{ fontSize: 14 }} />
+            Home
+          </Link>
+        </div>
       </div>
     </div>
   );

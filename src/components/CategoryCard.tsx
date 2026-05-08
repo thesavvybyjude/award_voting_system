@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { NomineeCard } from "./NomineeCard";
 import { VoteStepper } from "./VoteStepper";
 import { useVote } from "@/contexts/VoteContext";
 import { VOTE_PRICE_NAIRA } from "@/lib/awards.config";
@@ -17,10 +16,7 @@ export function CategoryCard({ category, index }: CategoryCardProps) {
   const [selectedNominee, setSelectedNominee] = useState<string | null>(null);
   const { selections, addVote, removeVote, getVotesForNominee } = useVote();
 
-  const categoryVotes = selections
-    .filter((s) => s.categoryId === category.id)
-    .reduce((sum, s) => sum + s.votes, 0);
-
+  
   const activeNominee = selectedNominee
     ? category.nominees.find((n) => n.id === selectedNominee)
     : null;
