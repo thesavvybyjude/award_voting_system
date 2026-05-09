@@ -1269,3 +1269,220 @@ h1, h2, h3, h4, h5, h6 {
 .provider-tag.paystack { background: #E0FFFE; color: #00C2A8; }
 .provider-tag.flutterwave { background: #FFF4E6; color: #E85D04; }
 .provider-tag.manual { background: #EFF6FF; color: #3B82F6; }
+
+/* ── Financial Summary ───────────────────────────────── */
+.financial-summary {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  margin-top: 16px;
+  overflow: hidden;
+}
+.financial-summary-header {
+  background: linear-gradient(135deg, var(--ink) 0%, #2a2a2a 100%);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.financial-summary-header i {
+  font-size: 18px;
+  color: white;
+}
+.financial-summary-header span {
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 0.01em;
+}
+.financial-summary-content {
+  padding: 16px;
+}
+.fs-section {
+  margin-bottom: 20px;
+}
+.fs-section:last-child { margin-bottom: 0; }
+.fs-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-light);
+}
+.fs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.fs-stat {
+  text-align: center;
+  padding: 12px;
+  background: var(--surface-alt);
+  border-radius: 8px;
+}
+.fs-stat-label {
+  font-size: 9px;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+.fs-stat-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.fs-stat-value.green { color: #16A34A; }
+.fs-stat-value.yellow { color: #D97706; }
+.fs-stat-value.red { color: #DC2626; }
+
+.fs-gateway {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-light);
+}
+.fs-gateway:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.fs-gateway-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.fs-gateway-title i { font-size: 14px; }
+.fs-gateway-title.bank { color: #3B82F6; }
+.fs-gateway-title.flutterwave { color: #E85D04; }
+.fs-gateway-title.paystack { color: #00C2A8; }
+.fs-gateway-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.fs-gateway-stat {
+  padding: 10px;
+  background: var(--surface-alt2);
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
+}
+.fs-gateway-stat-label {
+  font-size: 9px;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+.fs-gateway-stat-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.fs-interpretation {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.fs-int-box {
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid;
+}
+.fs-int-box.confirmed {
+  background: linear-gradient(135deg, #DCFCE7 0%, #F0FDF4 100%);
+  border-color: #86EFAC;
+}
+.fs-int-box.pending {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FFFBEB 100%);
+  border-color: #FCD34D;
+}
+.fs-int-box.failed {
+  background: linear-gradient(135deg, #FEE2E2 0%, #FEF2F2 100%);
+  border-color: #FECACA;
+}
+.fs-int-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+.fs-int-label.confirmed { color: #16A34A; }
+.fs-int-label.pending { color: #D97706; }
+.fs-int-label.failed { color: #DC2626; }
+.fs-int-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.fs-int-sub {
+  font-size: 10px;
+  color: var(--ink-muted);
+  margin-top: 4px;
+}
+
+.fs-comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+.fs-comparison-table th {
+  background: var(--surface-alt);
+  padding: 10px 8px;
+  text-align: left;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-muted);
+  border-bottom: 1px solid var(--border-light);
+}
+.fs-comparison-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--border-light);
+  font-weight: 500;
+}
+.fs-comparison-table tr:last-child td { border-bottom: none; }
+
+.fs-observations {
+  padding: 14px;
+  background: var(--surface-alt);
+  border-radius: 8px;
+  border-left: 3px solid var(--ink);
+}
+.fs-obs-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+.fs-obs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.fs-obs-list li {
+  font-size: 12px;
+  color: var(--ink-light);
+  margin-bottom: 8px;
+  padding-left: 16px;
+  position: relative;
+  line-height: 1.5;
+}
+.fs-obs-list li:last-child { margin-bottom: 0; }
+.fs-obs-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--ink);
+  font-weight: 700;
+}
+.fs-obs-highlight {
+  font-weight: 600;
+  color: var(--ink);
+}

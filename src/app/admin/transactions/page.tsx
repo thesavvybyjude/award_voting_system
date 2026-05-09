@@ -91,29 +91,114 @@ export default function TransactionsPage() {
   const downloadPDF = () => {
     const now = new Date().toLocaleString();
     
+    const bankSuccess = transactions.filter(t => t.payment_provider === "manual" && t.status === "success").reduce((sum, t) => sum + (t.amount_total / 100), 0);
+    const bankPending = transactions.filter(t => t.payment_provider === "manual" && t.status === "pending").reduce((sum, t) => sum + (t.amount_total / 100), 0);
+    const bankFailed = transactions.filter(t => t.payment_provider === "manual" && t.status === "failed").reduce((sum, t) => sum + (t.amount_total / 100), 0);
+    const flutterSuccess = transactions.filter(t => t.payment_provider === "flutterwave" && t.status === "success").reduce((sum, t) => sum + (t.amount_total / 100), 0);
+    const flutterPending = transactions.filter(t => t.payment_provider === "flutterwave" && t.status === "pending").reduce((sum, t) => sum + (t.amount_total / 100), 0);
+    const flutterFailed = transactions.filter(t => t.payment_provider === "flutterwave" && t.status === "failed").reduce((sum, t) => sum + (t.amount_total / 100), 0);
+    const paystackSuccess = transactions.filter(t => t.payment_provider === "paystack" && t.status === "success").reduce((sum, t) => sum + (t.amount_total / 100), 0);
+    const paystackPending = transactions.filter(t => t.payment_provider === "paystack" && t.status === "pending").reduce((sum, t) => sum + (t.amount_total / 100), 0);
+    const paystackFailed = transactions.filter(t => t.payment_provider === "paystack" && t.status === "failed").reduce((sum, t) => sum + (t.amount_total / 100), 0);
+    
+    const confirmed = transactions.filter(t => t.status === "success").reduce((sum, t) => sum + (t.amount_total / 100), 0);
+    const pending = transactions.filter(t => t.status === "pending").reduce((sum, t) => sum + (t.amount_total / 100), 0);
+    const failed = transactions.filter(t => t.status === "failed").reduce((sum, t) => sum + (t.amount_total / 100), 0);
+    const totalValue = transactions.reduce((sum, t) => sum + (t.amount_total / 100), 0);
+    const totalVotes = transactions.reduce((sum, t) => sum + t.total_votes, 0);
+    const successCount = transactions.filter(t => t.status === "success").length;
+    const pendingCount = transactions.filter(t => t.status === "pending").length;
+    const failedCount = transactions.filter(t => t.status === "failed").length;
+
     let html = `
       <!DOCTYPE html>
       <html>
       <head>
         <title>Transaction Log - Faculty Awards 2026</title>
         <style>
-          body { font-family: Arial, sans-serif; padding: 20px; }
+          body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
           h1 { font-size: 18px; margin-bottom: 5px; }
+          h2 { font-size: 14px; margin: 20px 0 10px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
           .date { font-size: 12px; color: #666; margin-bottom: 20px; }
-          table { width: 100%; border-collapse: collapse; font-size: 11px; }
+          table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px; }
           th { background: #333; color: white; padding: 8px; text-align: left; }
           td { padding: 8px; border-bottom: 1px solid #ddd; }
           tr:nth-child(even) { background: #f9f9f9; }
           .success { color: green; }
           .pending { color: orange; }
           .failed { color: red; }
-          .total-row { font-weight: bold; background: #eee; }
-          .summary { margin-top: 20px; padding: 10px; background: #f5f5f5; }
+          .summary-box { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+          .summary-stat { background: #f5f5f5; padding: 10px; border-radius: 5px; text-align: center; }
+          .summary-stat-label { font-size: 9px; color: #666; text-transform: uppercase; }
+          .summary-stat-value { font-size: 16px; font-weight: bold; }
+          .int-box { padding: 10px; border-radius: 5px; text-align: center; }
+          .int-box.confirmed { background: #dcfce7; border: 1px solid #86efac; }
+          .int-box.pending { background: #fef3c7; border: 1px solid #fcd34d; }
+          .int-box.failed { background: #fee2e2; border: 1px solid #fecaca; }
+          .int-label { font-size: 9px; font-weight: bold; text-transform: uppercase; }
+          .int-value { font-size: 14px; font-weight: bold; }
+          .comparison-table { width: 100%; font-size: 10px; }
+          .comparison-table th { background: #f5f5f5; }
+          .obs-box { background: #f5f5f5; padding: 10px; border-left: 3px solid #333; font-size: 11px; }
+          .obs-list { margin: 0; padding-left: 15px; }
+          .obs-list li { margin-bottom: 5px; }
         </style>
       </head>
       <body>
-        <h1>🏆 Faculty of Computing Awards 2026</h1>
-        <p class="date">Transaction Log - Generated: ${now}</p>
+        <h1>Faculty of Computing Awards 2026 - Transaction Report</h1>
+        <p class="date">Generated: ${now}</p>
+        
+        <h2>Overall Summary</h2>
+        <div class="summary-box">
+          <div class="summary-stat">
+            <div class="summary-stat-label">Total Transactions</div>
+            <div class="summary-stat-value">${transactions.length}</div>
+          </div>
+          <div class="summary-stat">
+            <div class="summary-stat-label">Total Votes</div>
+            <div class="summary-stat-value">${totalVotes}</div>
+          </div>
+          <div class="summary-stat">
+            <div class="summary-stat-label">Total Value</div>
+            <div class="summary-stat-value">₦${totalValue.toLocaleString()}</div>
+          </div>
+          <div class="summary-stat">
+            <div class="summary-stat-label">Success Rate</div>
+            <div class="summary-stat-value" style="color:green">${transactions.length > 0 ? Math.round((successCount / transactions.length) * 100) : 0}%</div>
+          </div>
+        </div>
+
+        <h2>Breakdown by Payment Gateway</h2>
+        <table>
+          <thead><tr><th>Gateway</th><th>Successful</th><th>Pending</th><th>Failed</th></tr></thead>
+          <tbody>
+            <tr><td>Bank Transfer</td><td>₦${bankSuccess.toLocaleString()}</td><td>₦${bankPending.toLocaleString()}</td><td>₦${bankFailed.toLocaleString()}</td></tr>
+            <tr><td>Flutterwave</td><td>₦${flutterSuccess.toLocaleString()}</td><td>₦${flutterPending.toLocaleString()}</td><td>₦${flutterFailed.toLocaleString()}</td></tr>
+            <tr><td>Paystack</td><td>₦${paystackSuccess.toLocaleString()}</td><td>₦${paystackPending.toLocaleString()}</td><td>₦${paystackFailed.toLocaleString()}</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Financial Interpretation</h2>
+        <div class="summary-box">
+          <div class="int-box confirmed">
+            <div class="int-label" style="color:#16a34a">Confirmed</div>
+            <div class="int-value">₦${confirmed.toLocaleString()}</div>
+          </div>
+          <div class="int-box pending">
+            <div class="int-label" style="color:#d97706">Pending</div>
+            <div class="int-value">₦${pending.toLocaleString()}</div>
+          </div>
+          <div class="int-box failed">
+            <div class="int-label" style="color:#dc2626">Failed</div>
+            <div class="int-value">₦${failed.toLocaleString()}</div>
+          </div>
+          <div class="int-box" style="background:#f5f5f5;border:1px solid #ddd">
+            <div class="int-label">Gross Total</div>
+            <div class="int-value">₦${totalValue.toLocaleString()}</div>
+          </div>
+        </div>
+
+        <h2>Transaction Details</h2>
         <table>
           <thead>
             <tr>
@@ -129,20 +214,10 @@ export default function TransactionsPage() {
           <tbody>
     `;
 
-    let totalAmount = 0;
-    let totalVotes = 0;
-    let successCount = 0;
-    let pendingCount = 0;
-
     transactions.forEach((t) => {
       const date = new Date(t.created_at).toLocaleDateString();
       const amount = t.amount_total / 100;
       const statusClass = t.status === "success" ? "success" : t.status === "pending" ? "pending" : "failed";
-      
-      totalAmount += amount;
-      totalVotes += t.total_votes;
-      if (t.status === "success") successCount++;
-      if (t.status === "pending") pendingCount++;
 
       html += `
         <tr>
@@ -160,12 +235,15 @@ export default function TransactionsPage() {
     html += `
           </tbody>
         </table>
-        <div class="summary">
-          <strong>Summary:</strong><br/>
-          Total Transactions: ${transactions.length}<br/>
-          Approved: ${successCount} | Pending: ${pendingCount}<br/>
-          Total Amount: ₦${totalAmount.toLocaleString()}<br/>
-          Total Votes: ${totalVotes}
+
+        <h2>Key Observations</h2>
+        <div class="obs-box">
+          <ul class="obs-list">
+            ${bankPending > 0 ? `<li><strong>${transactions.filter(t => t.payment_provider === "manual" && t.status === "pending").length} pending Bank Transfers</strong> require manual verification.</li>` : ''}
+            ${flutterFailed > 0 ? `<li><strong>${transactions.filter(t => t.payment_provider === "flutterwave" && t.status === "failed").length} failed Flutterwave transactions</strong> detected.</li>` : ''}
+            <li><strong>₦${confirmed.toLocaleString()}</strong> confirmed is already in your account.</li>
+            ${transactions.filter(t => t.payment_provider === "manual").length > transactions.filter(t => t.payment_provider !== "manual").length ? '<li>Bank Transfer is your dominant payment method.</li>' : ''}
+          </ul>
         </div>
       </body>
       </html>
@@ -237,38 +315,246 @@ export default function TransactionsPage() {
             <p className="text-[14px] text-ink-muted mt-3">No transactions yet</p>
           </div>
         ) : (
-          <div className="table-container">
-            <table className="transactions-table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Reference</th>
-                  <th>Type</th>
-                  <th>Amount</th>
-                  <th>Votes</th>
-                  <th>Status</th>
-                  <th>Payer</th>
-                </tr>
-              </thead>
-              <tbody>
-                {transactions.map((t) => (
-                  <tr key={t.id}>
-                    <td className="text-[11px]">{new Date(t.created_at).toLocaleDateString()}</td>
-                    <td className="text-[10px] font-mono">{t.reference}</td>
-                    <td>
-                      <span className={`provider-tag ${t.payment_provider}`}>
-                        {getProviderLabel(t.payment_provider)}
-                      </span>
-                    </td>
-                    <td className="font-semibold">₦{(t.amount_total / 100).toLocaleString()}</td>
-                    <td>{t.total_votes}</td>
-                    <td>{getStatusBadge(t.status)}</td>
-                    <td className="text-[11px]">{t.payer_name || "-"}</td>
+          <>
+            <div className="table-container">
+              <table className="transactions-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Reference</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Votes</th>
+                    <th>Status</th>
+                    <th>Payer</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {transactions.map((t) => (
+                    <tr key={t.id}>
+                      <td className="text-[11px]">{new Date(t.created_at).toLocaleDateString()}</td>
+                      <td className="text-[10px] font-mono">{t.reference}</td>
+                      <td>
+                        <span className={`provider-tag ${t.payment_provider}`}>
+                          {getProviderLabel(t.payment_provider)}
+                        </span>
+                      </td>
+                      <td className="font-semibold">₦{(t.amount_total / 100).toLocaleString()}</td>
+                      <td>{t.total_votes}</td>
+                      <td>{getStatusBadge(t.status)}</td>
+                      <td className="text-[11px]">{t.payer_name || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="financial-summary">
+              <div className="financial-summary-header">
+                <i className="ti ti-chart-pie" />
+                <span>Financial Summary</span>
+              </div>
+              <div className="financial-summary-content">
+                <div className="fs-section">
+                  <div className="fs-section-title">Overall Summary</div>
+                  <div className="fs-grid">
+                    <div className="fs-stat">
+                      <div className="fs-stat-label">Total Transactions</div>
+                      <div className="fs-stat-value">{transactions.length}</div>
+                    </div>
+                    <div className="fs-stat">
+                      <div className="fs-stat-label">Total Votes</div>
+                      <div className="fs-stat-value">{transactions.reduce((sum, t) => sum + t.total_votes, 0)}</div>
+                    </div>
+                    <div className="fs-stat">
+                      <div className="fs-stat-label">Total Value</div>
+                      <div className="fs-stat-value">₦{transactions.reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}</div>
+                    </div>
+                    <div className="fs-stat">
+                      <div className="fs-stat-label">Success Rate</div>
+                      <div className="fs-stat-value green">{transactions.length > 0 ? Math.round((transactions.filter(t => t.status === "success").length / transactions.length) * 100) : 0}%</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="fs-section">
+                  <div className="fs-section-title">Breakdown by Payment Gateway</div>
+                  
+                  <div className="fs-gateway">
+                    <div className="fs-gateway-title bank"><i className="ti ti-building-bank" /> Bank Transfer</div>
+                    <div className="fs-gateway-grid">
+                      <div className="fs-gateway-stat">
+                        <div className="fs-gateway-stat-label">Successful</div>
+                        <div className="fs-gateway-stat-value">
+                          ₦{transactions.filter(t => t.payment_provider === "manual" && t.status === "success").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}
+                        </div>
+                      </div>
+                      <div className="fs-gateway-stat">
+                        <div className="fs-gateway-stat-label">Pending</div>
+                        <div className="fs-gateway-stat-value">
+                          ₦{transactions.filter(t => t.payment_provider === "manual" && t.status === "pending").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}
+                        </div>
+                      </div>
+                      <div className="fs-gateway-stat">
+                        <div className="fs-gateway-stat-label">Failed</div>
+                        <div className="fs-gateway-stat-value">
+                          ₦{transactions.filter(t => t.payment_provider === "manual" && t.status === "failed").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="fs-gateway">
+                    <div className="fs-gateway-title flutterwave"><i className="ti ti-credit-card" /> Flutterwave</div>
+                    <div className="fs-gateway-grid">
+                      <div className="fs-gateway-stat">
+                        <div className="fs-gateway-stat-label">Successful</div>
+                        <div className="fs-gateway-stat-value">
+                          ₦{transactions.filter(t => t.payment_provider === "flutterwave" && t.status === "success").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}
+                        </div>
+                      </div>
+                      <div className="fs-gateway-stat">
+                        <div className="fs-gateway-stat-label">Pending</div>
+                        <div className="fs-gateway-stat-value">
+                          ₦{transactions.filter(t => t.payment_provider === "flutterwave" && t.status === "pending").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}
+                        </div>
+                      </div>
+                      <div className="fs-gateway-stat">
+                        <div className="fs-gateway-stat-label">Failed</div>
+                        <div className="fs-gateway-stat-value">
+                          ₦{transactions.filter(t => t.payment_provider === "flutterwave" && t.status === "failed").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="fs-gateway">
+                    <div className="fs-gateway-title paystack"><i className="ti ti-wallet" /> Paystack</div>
+                    <div className="fs-gateway-grid">
+                      <div className="fs-gateway-stat">
+                        <div className="fs-gateway-stat-label">Successful</div>
+                        <div className="fs-gateway-stat-value">
+                          ₦{transactions.filter(t => t.payment_provider === "paystack" && t.status === "success").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}
+                        </div>
+                      </div>
+                      <div className="fs-gateway-stat">
+                        <div className="fs-gateway-stat-label">Pending</div>
+                        <div className="fs-gateway-stat-value">
+                          ₦{transactions.filter(t => t.payment_provider === "paystack" && t.status === "pending").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}
+                        </div>
+                      </div>
+                      <div className="fs-gateway-stat">
+                        <div className="fs-gateway-stat-label">Failed</div>
+                        <div className="fs-gateway-stat-value">
+                          ₦{transactions.filter(t => t.payment_provider === "paystack" && t.status === "failed").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="fs-section">
+                  <div className="fs-section-title">Financial Interpretation</div>
+                  <div className="fs-interpretation">
+                    <div className="fs-int-box confirmed">
+                      <div className="fs-int-label confirmed">Money Already Confirmed</div>
+                      <div className="fs-int-value">₦{transactions.filter(t => t.status === "success").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}</div>
+                      <div className="fs-int-sub">In your account now</div>
+                    </div>
+                    <div className="fs-int-box pending">
+                      <div className="fs-int-label pending">Money Still Pending</div>
+                      <div className="fs-int-value">₦{transactions.filter(t => t.status === "pending").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}</div>
+                      <div className="fs-int-sub">Awaiting verification</div>
+                    </div>
+                    <div className="fs-int-box failed">
+                      <div className="fs-int-label failed">Money Lost / Failed</div>
+                      <div className="fs-int-value">₦{transactions.filter(t => t.status === "failed").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}</div>
+                      <div className="fs-int-sub">Not in your account</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="fs-section">
+                  <div className="fs-section-title">Gateway Comparison</div>
+                  <table className="fs-comparison-table">
+                    <thead>
+                      <tr>
+                        <th>Gateway</th>
+                        <th>Successful Amount</th>
+                        <th>Pending</th>
+                        <th>Failed</th>
+                        <th>Total Activity</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Bank Transfer</td>
+                        <td>₦{transactions.filter(t => t.payment_provider === "manual" && t.status === "success").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}</td>
+                        <td>₦{transactions.filter(t => t.payment_provider === "manual" && t.status === "pending").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}</td>
+                        <td>₦{transactions.filter(t => t.payment_provider === "manual" && t.status === "failed").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}</td>
+                        <td>₦{transactions.filter(t => t.payment_provider === "manual").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}</td>
+                      </tr>
+                      <tr>
+                        <td>Flutterwave</td>
+                        <td>₦{transactions.filter(t => t.payment_provider === "flutterwave" && t.status === "success").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}</td>
+                        <td>₦{transactions.filter(t => t.payment_provider === "flutterwave" && t.status === "pending").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}</td>
+                        <td>₦{transactions.filter(t => t.payment_provider === "flutterwave" && t.status === "failed").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}</td>
+                        <td>₦{transactions.filter(t => t.payment_provider === "flutterwave").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}</td>
+                      </tr>
+                      <tr>
+                        <td>Paystack</td>
+                        <td>₦{transactions.filter(t => t.payment_provider === "paystack" && t.status === "success").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}</td>
+                        <td>₦{transactions.filter(t => t.payment_provider === "paystack" && t.status === "pending").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}</td>
+                        <td>₦{transactions.filter(t => t.payment_provider === "paystack" && t.status === "failed").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}</td>
+                        <td>₦{transactions.filter(t => t.payment_provider === "paystack").reduce((sum, t) => sum + (t.amount_total / 100), 0).toLocaleString()}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="fs-section">
+                  <div className="fs-section-title">Key Observations</div>
+                  <div className="fs-observations">
+                    <div className="fs-obs-title">Analysis</div>
+                    <ul className="fs-obs-list">
+                      {(() => {
+                        const bankPending = transactions.filter(t => t.payment_provider === "manual" && t.status === "pending").length;
+                        const flutterwaveFailed = transactions.filter(t => t.payment_provider === "flutterwave" && t.status === "failed").length;
+                        const confirmed = transactions.filter(t => t.status === "success").reduce((sum, t) => sum + (t.amount_total / 100), 0);
+                        const total = transactions.reduce((sum, t) => sum + (t.amount_total / 100), 0);
+                        
+                        return (
+                          <>
+                            {bankPending > 0 && (
+                              <li>
+                                <span className="fs-obs-highlight">{bankPending} pending Bank Transfers</span> require manual verification. Consider auto-confirmation or batch processing.
+                              </li>
+                            )}
+                            {flutterwaveFailed > 0 && (
+                              <li>
+                                <span className="fs-obs-highlight">{flutterwaveFailed} failed Flutterwave transactions</span> detected. Monitor for patterns.
+                              </li>
+                            )}
+                            {confirmed > 0 && (
+                              <li>
+                                <span className="fs-obs-highlight">₦{confirmed.toLocaleString()} confirmed</span> is already in your account ({(total > 0 ? Math.round((confirmed / total) * 100) : 0)}% of total activity).
+                              </li>
+                            )}
+                            {transactions.filter(t => t.status === "pending").length === 0 && (
+                              <li>No pending transactions - all payments have been processed.</li>
+                            )}
+                            {transactions.filter(t => t.payment_provider === "manual").length > transactions.filter(t => t.payment_provider !== "manual").length && (
+                              <li>Bank Transfer is your dominant payment method.</li>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
         )}
       </div>
 
