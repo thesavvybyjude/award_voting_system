@@ -1,7 +1,7 @@
 // Default Configuration - Committed to GitHub
 // Sensitive keys (Supabase, Flutterwave, Paystack) stay in .env
 
-export const ADMIN_PIN = "2026";
+export const ADMIN_PIN = "0428";
 
 export const VOTE_PRICE_NAIRA = 200;
 export const VOTE_PRICE_KOBO = VOTE_PRICE_NAIRA * 100;
@@ -23,5 +23,5 @@ export const BANK_TRANSFER_DETAILS = {
 };
 
 // WhatsApp for Payment Verification
-export const WHATSAPP_VERIFY_NUMBER = "2348126369366";
-export const WHATSAPP_VERIFY_LINK = "https://wa.me/+2348126369366";
+export const WHATSAPP_VERIFY_NUMBER = "2349012607545";
+export const WHATSAPP_VERIFY_LINK = "https://wa.me/+2349012607545";
