@@ -1,13 +1,19 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { ADMIN_SUPREME_PIN } from "@/lib/default-config";
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const pin = searchParams.get("pin");
 
-    if (!pin || pin !== process.env.ADMIN_PIN) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    if (!pin) {
+      return NextResponse.json({ success: false, error: "PIN required" }, { status: 401 });
+    }
+
+    const supremePin = process.env.ADMIN_SUPREME_PIN || ADMIN_SUPREME_PIN;
+    if (pin !== supremePin) {
+      return NextResponse.json({ success: false, error: "Unauthorized: Supreme access required" }, { status: 401 });
     }
 
     const supabase = createAdminClient();

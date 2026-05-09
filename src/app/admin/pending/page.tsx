@@ -25,6 +25,7 @@ interface PendingTransaction {
 export default function AdminPendingPage() {
   const [authenticated, setAuthenticated] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [role, setRole] = useState<"admin" | "supreme">("admin");
   const [isDesktop, setIsDesktop] = useState(false);
   const [pending, setPending] = useState<PendingTransaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +37,9 @@ export default function AdminPendingPage() {
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     const pin = sessionStorage.getItem("admin-pin");
+    const storedRole = sessionStorage.getItem("admin-role");
     setAuthenticated(!!pin);
+    setRole((storedRole as "admin" | "supreme") || "admin");
     setMounted(true);
     setIsDesktop(window.innerWidth >= 1024);
   }, []);
@@ -74,7 +77,12 @@ export default function AdminPendingPage() {
   }, [authenticated, fetchPending, mounted]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  if (!authenticated) return <PinGate onAuthenticated={() => setAuthenticated(true)} />;
+  if (!authenticated) return <PinGate onAuthenticated={(r) => { setRole(r); setAuthenticated(true); }} />;
+
+  if (role !== "supreme") {
+    if (typeof window !== "undefined") window.location.href = "/admin";
+    return null;
+  }
 
   const handleApprove = async (id: string) => {
     const pin = sessionStorage.getItem("admin-pin");

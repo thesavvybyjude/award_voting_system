@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 
 interface PinGateProps {
-  onAuthenticated: () => void;
+  onAuthenticated: (role: "admin" | "supreme") => void;
 }
 
 export function PinGate({ onAuthenticated }: PinGateProps) {
@@ -34,7 +34,8 @@ export function PinGate({ onAuthenticated }: PinGateProps) {
       const data = await res.json();
       if (data.valid) {
         sessionStorage.setItem("admin-pin", pin);
-        onAuthenticated();
+        sessionStorage.setItem("admin-role", data.role || "admin");
+        onAuthenticated(data.role || "admin");
       } else {
         setError("Invalid PIN");
         setPin("");

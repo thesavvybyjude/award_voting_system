@@ -22,6 +22,7 @@ interface CategoryWithVotes {
 export default function ResultsPage() {
   const [authenticated, setAuthenticated] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [role, setRole] = useState<"admin" | "supreme">("admin");
   const [loading, setLoading] = useState(true);
   const [totalVotes, setTotalVotes] = useState(0);
   const [categories, setCategories] = useState<CategoryWithVotes[]>([]);
@@ -31,7 +32,9 @@ export default function ResultsPage() {
 
   useEffect(() => {
     const pin = sessionStorage.getItem("admin-pin");
+    const storedRole = sessionStorage.getItem("admin-role");
     setAuthenticated(!!pin);
+    setRole((storedRole as "admin" | "supreme") || "admin");
     setMounted(true);
   }, []);
 
@@ -126,7 +129,7 @@ export default function ResultsPage() {
     loadResults();
   };
 
-  if (!authenticated) return <PinGate onAuthenticated={() => setAuthenticated(true)} />;
+  if (!authenticated) return <PinGate onAuthenticated={(r) => { setRole(r); setAuthenticated(true); }} />;
 
   return (
     <>
@@ -238,15 +241,17 @@ export default function ResultsPage() {
             <i className="ti ti-trophy" />
             <span>Results</span>
           </button>
-          <Link href="/admin/pending" className="atab">
-            <i className="ti ti-file-check" />
-            <span>Review</span>
-          </Link>
+          {role === "supreme" && (
+            <Link href="/admin/pending" className="atab">
+              <i className="ti ti-file-check" />
+              <span>Review</span>
+            </Link>
+          )}
           <Link href="/admin/transactions" className="atab">
             <i className="ti ti-receipt" />
             <span>Transactions</span>
           </Link>
-          <button className="atab" onClick={() => { sessionStorage.removeItem("admin-pin"); window.location.reload(); }}>
+          <button className="atab" onClick={() => { sessionStorage.removeItem("admin-pin"); sessionStorage.removeItem("admin-role"); window.location.reload(); }}>
             <i className="ti ti-lock" />
             <span>Lock</span>
           </button>

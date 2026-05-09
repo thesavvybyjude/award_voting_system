@@ -2,6 +2,7 @@
 // Sensitive keys (Supabase, Flutterwave, Paystack) stay in .env
 
 export const ADMIN_PIN = "0428";
+export const ADMIN_SUPREME_PIN = "0000";
 
 export const VOTE_PRICE_NAIRA = 200;
 export const VOTE_PRICE_KOBO = VOTE_PRICE_NAIRA * 100;

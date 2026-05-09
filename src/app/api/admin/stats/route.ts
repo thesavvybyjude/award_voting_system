@@ -1,16 +1,20 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { ADMIN_SUPREME_PIN } from "@/lib/default-config";
 import { awardsConfig } from "@/lib/awards.config";
 
 export async function GET(req: Request) {
   try {
-    // Validate admin PIN from header
     const pin = req.headers.get("x-admin-pin");
-    if (!pin || pin !== process.env.ADMIN_PIN) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
+    if (!pin) {
+      return NextResponse.json({ success: false, error: "PIN required" }, { status: 401 });
+    }
+
+    const adminPin = process.env.ADMIN_PIN;
+    const supremePin = process.env.ADMIN_SUPREME_PIN || ADMIN_SUPREME_PIN;
+
+    if (pin !== adminPin && pin !== supremePin) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
     const supabase = createAdminClient();

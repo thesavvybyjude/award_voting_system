@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { ADMIN_SUPREME_PIN } from "@/lib/default-config";
 import type { VoteSelection } from "@/types";
 
 export async function POST(req: Request) {
@@ -9,8 +10,13 @@ export async function POST(req: Request) {
       pin: string;
     };
 
-    if (!pin || pin !== process.env.ADMIN_PIN) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    if (!pin) {
+      return NextResponse.json({ success: false, error: "PIN required" }, { status: 401 });
+    }
+
+    const supremePin = process.env.ADMIN_SUPREME_PIN || ADMIN_SUPREME_PIN;
+    if (pin !== supremePin) {
+      return NextResponse.json({ success: false, error: "Unauthorized: Supreme access required" }, { status: 401 });
     }
 
     if (!transactionId) {

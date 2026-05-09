@@ -23,6 +23,7 @@ interface Transaction {
 export default function TransactionsPage() {
   const [authenticated, setAuthenticated] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [role, setRole] = useState<"admin" | "supreme">("admin");
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
@@ -30,7 +31,9 @@ export default function TransactionsPage() {
 
   useEffect(() => {
     const pin = sessionStorage.getItem("admin-pin");
+    const storedRole = sessionStorage.getItem("admin-role");
     setAuthenticated(!!pin);
+    setRole((storedRole as "admin" | "supreme") || "admin");
     setMounted(true);
   }, []);
 
@@ -176,7 +179,7 @@ export default function TransactionsPage() {
     }
   };
 
-  if (!authenticated) return <PinGate onAuthenticated={() => setAuthenticated(true)} />;
+  if (!authenticated) return <PinGate onAuthenticated={(r) => { setRole(r); setAuthenticated(true); }} />;
 
   const totalAmount = transactions.reduce((sum, t) => sum + (t.status === "success" ? t.amount_total / 100 : 0), 0);
   const _totalVotes = transactions.reduce((sum, t) => sum + (t.status === "success" ? t.total_votes : 0), 0);
@@ -278,15 +281,17 @@ export default function TransactionsPage() {
           <i className="ti ti-trophy" />
           <span>Results</span>
         </Link>
-        <Link href="/admin/pending" className="atab">
-          <i className="ti ti-file-check" />
-          <span>Review</span>
-        </Link>
+        {role === "supreme" && (
+          <Link href="/admin/pending" className="atab">
+            <i className="ti ti-file-check" />
+            <span>Review</span>
+          </Link>
+        )}
         <Link href="/admin/transactions" className="atab on">
           <i className="ti ti-receipt" />
           <span>Transactions</span>
         </Link>
-        <button className="atab" onClick={() => { sessionStorage.removeItem("admin-pin"); window.location.reload(); }}>
+        <button className="atab" onClick={() => { sessionStorage.removeItem("admin-pin"); sessionStorage.removeItem("admin-role"); window.location.reload(); }}>
           <i className="ti ti-lock" />
           <span>Lock</span>
         </button>

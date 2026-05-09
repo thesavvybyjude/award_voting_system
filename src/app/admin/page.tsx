@@ -17,6 +17,7 @@ interface Stats {
 export default function AdminDashboard() {
   const [authenticated, setAuthenticated] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [role, setRole] = useState<"admin" | "supreme">("admin");
 
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -25,7 +26,9 @@ export default function AdminDashboard() {
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     const pin = sessionStorage.getItem("admin-pin");
+    const storedRole = sessionStorage.getItem("admin-role");
     setAuthenticated(!!pin);
+    setRole((storedRole as "admin" | "supreme") || "admin");
     setMounted(true);
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
@@ -63,7 +66,7 @@ export default function AdminDashboard() {
   }, [authenticated, fetchStats, mounted]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  if (!authenticated) return <PinGate onAuthenticated={() => setAuthenticated(true)} />;
+  if (!authenticated) return <PinGate onAuthenticated={(r) => { setRole(r); setAuthenticated(true); }} />;
 
   // Build top nominees across all categories
   const topNominees = stats
@@ -168,15 +171,17 @@ export default function AdminDashboard() {
           <i className="ti ti-trophy" />
           <span>Results</span>
         </Link>
-        <Link href="/admin/pending" className="atab">
-          <i className="ti ti-file-check" />
-          <span>Review</span>
-        </Link>
+        {role === "supreme" && (
+          <Link href="/admin/pending" className="atab">
+            <i className="ti ti-file-check" />
+            <span>Review</span>
+          </Link>
+        )}
         <Link href="/admin/transactions" className="atab">
           <i className="ti ti-receipt" />
           <span>Transactions</span>
         </Link>
-        <button className="atab" onClick={() => { sessionStorage.removeItem("admin-pin"); window.location.reload(); }}>
+        <button className="atab" onClick={() => { sessionStorage.removeItem("admin-pin"); sessionStorage.removeItem("admin-role"); window.location.reload(); }}>
           <i className="ti ti-lock" />
           <span>Lock</span>
         </button>

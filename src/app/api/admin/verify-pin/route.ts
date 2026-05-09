@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { ADMIN_SUPREME_PIN } from "@/lib/default-config";
 
 export async function POST(req: Request) {
   try {
@@ -11,9 +12,18 @@ export async function POST(req: Request) {
       );
     }
 
-    const isValid = pin === process.env.ADMIN_PIN;
+    const supremePin = process.env.ADMIN_SUPREME_PIN || ADMIN_SUPREME_PIN;
+    const adminPin = process.env.ADMIN_PIN;
 
-    return NextResponse.json({ valid: isValid });
+    if (pin === supremePin) {
+      return NextResponse.json({ valid: true, role: "supreme" });
+    }
+
+    if (pin === adminPin) {
+      return NextResponse.json({ valid: true, role: "admin" });
+    }
+
+    return NextResponse.json({ valid: false });
   } catch {
     return NextResponse.json(
       { valid: false, error: "Internal server error" },
