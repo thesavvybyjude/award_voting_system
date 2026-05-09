@@ -23,5 +23,5 @@ export const BANK_TRANSFER_DETAILS = {
 };
 
 // WhatsApp for Payment Verification
-export const WHATSAPP_VERIFY_NUMBER = "2349012607545";
-export const WHATSAPP_VERIFY_LINK = "https://wa.me/+2349012607545";
+export const WHATSAPP_VERIFY_NUMBER = "2348126369366";
+export const WHATSAPP_VERIFY_LINK = "https://wa.me/2348126369366";
