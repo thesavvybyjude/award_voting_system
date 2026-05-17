@@ -1,30 +1,45 @@
 # Faculty of Computing Awards Voting System
 
-A modern voting platform for awarding students with multiple payment options including Paystack, Flutterwave, and bank transfer. Features real-time admin dashboard, live updates via Supabase, and comprehensive transaction logging.
+A modern voting platform for awarding students with payment options including Flutterwave. Features real-time admin dashboard, free voting for specific categories, live updates via Supabase, and comprehensive transaction logging.
 
 ## Features
 
 ### Payment Options
-- **Paystack** - Card payments (auto-disabled if keys missing/invalid)
 - **Flutterwave** - Card, USSD, Mobile Money, Transfer (auto-disabled if keys missing/invalid)
-- **Bank Transfer** - Manual transfer with 9-minute countdown timer, requires admin approval
+- **Bank Transfer** - Manual transfer with 9-minute countdown timer, requires admin approval (can be disabled)
+
+### Free Voting Categories
+Certain awards are free to vote on - no payment required. Configure in `src/lib/awards.config.ts`:
+
+```typescript
+export const FREE_AWARD_CATEGORIES = [
+  "sportsman",
+  "sportswoman",
+  "best-duo",
+  "always-late-award",
+  "class-comedian",
+];
+```
+
+Users can vote once per nominee in free categories. Votes are recorded immediately without payment. Admin sees free vs paid vote breakdown in results.
 
 ### Payment Verification
 - **WhatsApp Integration** - Users can send payment confirmation via WhatsApp after bank transfer
 - **Auto-disable** - Payment providers automatically disable if API keys are missing or placeholder values
-- **Provider Tracking** - Each transaction is tagged with its payment method (Paystack/Flutterwave/Bank Transfer)
+- **Provider Tracking** - Each transaction is tagged with its payment method (Flutterwave/Manual Transfer/Free)
 
 ### Admin Dashboard (PIN-protected)
-- **Overview Tab** - Real-time stats: total votes, revenue, voters count
-- **Results Tab** - Live voting results per category with nominee rankings
+- **Overview Tab** - Real-time stats: total votes, revenue, voters count, free vs paid breakdown
+- **Results Tab** - Live voting results per category with nominee rankings, free/paid vote tags
 - **Review Tab** - Approve pending bank transfers before votes are counted
-- **Transactions Tab** - Complete transaction log with PDF download
+- **Transactions Tab** - Complete transaction log with PDF download, filter by provider
 - **Lock Tab** - Secure admin session
 
 ### Real-time Updates
 - All admin pages use Supabase Realtime for live data
 - Instant updates when new votes come in
 - Pending transfers appear in real-time
+- Free and paid votes tracked separately
 
 ## Quick Start
 
@@ -68,7 +83,7 @@ BANK_TRANSFER_INSTRUCTIONS=Transfer the exact amount...
 ```
 NEXT_PUBLIC_ENABLE_PAYSTACK=true
 NEXT_PUBLIC_ENABLE_FLUTTERWAVE=true
-NEXT_PUBLIC_ENABLE_TRANSFER=true
+NEXT_PUBLIC_ENABLE_TRANSFER=true  # Set to false to disable bank transfer
 ```
 
 ### WhatsApp Verification
@@ -140,9 +155,16 @@ The migration creates:
 
 Located at `/admin/transactions`:
 - Shows all transactions (success, pending, failed)
-- Filter by payment provider (Paystack, Flutterwave, Bank Transfer)
-- Displays: date, reference, amount, votes, status, payer name
+- Filter by payment provider (Flutterwave, Manual, Free)
+- Displays: date, reference, amount, votes, status
 - **Download PDF** - Generate printable transaction report
+
+## Free vs Paid Vote Tracking
+
+Admin results page shows breakdown:
+- Green badge = free votes
+- Blue badge = paid votes
+- Stats API returns `freeVotes`, `paidVotes`, `freeVoters`, `paidVoters`
 
 ## Tech Stack
 
