@@ -11,11 +11,14 @@ interface NomineeVotes {
   id: string;
   name: string;
   votes: number;
+  freeVotes: number;
+  paidVotes: number;
 }
 
 interface CategoryWithVotes {
   id: string;
   name: string;
+  isFree: boolean;
   nominees: NomineeVotes[];
 }
 
@@ -46,7 +49,7 @@ export default function ResultsPage() {
       
       const { data: votesData, error: votesError } = await supabase
         .from("votes")
-        .select("category_id, nominee_id, vote_count");
+        .select("category_id, nominee_id, vote_count, transaction_id");
 
       if (votesError) {
         console.error("Votes query error:", votesError);
@@ -57,29 +60,51 @@ export default function ResultsPage() {
 
       const { data: txData, error: txError } = await supabase
         .from("transactions")
-        .select("id")
+        .select("id, payment_provider")
         .eq("status", "success");
 
       if (txError) {
         console.error("Transactions query error:", txError);
       }
 
+      const txProviderMap = new Map(
+        (txData || []).map(tx => [tx.id, tx.payment_provider])
+      );
+
+      const isFreeCategory = (catId: string) => 
+        ["sportsman", "sportswoman", "best-duo", "always-late-award", "class-comedian"].includes(catId);
+
       const total = (votesData || []).reduce((sum, v) => sum + (v.vote_count || 0), 0);
       setTotalVotes(total);
 
       const voteMap: Record<string, number> = {};
+      const freeVoteMap: Record<string, number> = {};
+      const paidVoteMap: Record<string, number> = {};
+
       (votesData || []).forEach((v) => {
         const key = `${v.category_id}-${v.nominee_id}`;
+        const provider = txProviderMap.get(v.transaction_id);
+        const isManual = provider === "manual";
+
         voteMap[key] = (voteMap[key] || 0) + (v.vote_count || 0);
+
+        if (isManual || isFreeCategory(v.category_id)) {
+          freeVoteMap[key] = (freeVoteMap[key] || 0) + (v.vote_count || 0);
+        } else {
+          paidVoteMap[key] = (paidVoteMap[key] || 0) + (v.vote_count || 0);
+        }
       });
 
       const cats = awardsConfig.map((cat) => ({
         id: cat.id,
         name: cat.name,
+        isFree: isFreeCategory(cat.id),
         nominees: cat.nominees.map((nom) => ({
           id: nom.id,
           name: nom.name,
           votes: voteMap[`${cat.id}-${nom.id}`] || 0,
+          freeVotes: freeVoteMap[`${cat.id}-${nom.id}`] || 0,
+          paidVotes: paidVoteMap[`${cat.id}-${nom.id}`] || 0,
         })).sort((a, b) => b.votes - a.votes),
       }));
 
@@ -157,7 +182,17 @@ export default function ResultsPage() {
           <div className="flex items-center gap-2 mb-1">
             <span className="w-[6px] h-[6px] rounded-full bg-live animate-pulse" />
             <span className="text-[10px] text-live font-medium uppercase tracking-wider">Live</span>
-            <span className="text-[11px] text-ink-muted ml-auto font-medium">{totalVotes.toLocaleString()} total votes</span>
+            <span className="text-[11px] text-ink-muted ml-auto font-medium">
+              {totalVotes.toLocaleString()} total votes
+            </span>
+          </div>
+          <div className="flex items-center gap-3 text-[11px]">
+            <span className="text-green-600 font-medium">
+              <span className="bg-green-100 text-green-700 px-1.5 py-0.5 rounded">Free</span> votes tracked
+            </span>
+            <span className="text-blue-600 font-medium">
+              <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">Paid</span> votes tracked
+            </span>
           </div>
           <div className="flex items-center justify-between">
             <div>
@@ -223,6 +258,16 @@ export default function ResultsPage() {
                         </div>
                         <span className="text-[13px] font-semibold text-ink min-w-[40px] text-right">{nom.votes}</span>
                         {isLeader && <span className="ml-1">👑</span>}
+                        {nom.freeVotes > 0 && (
+                          <span className="ml-2 text-[10px] bg-green-100 text-green-700 px-1.5 rounded">
+                            {nom.freeVotes} free
+                          </span>
+                        )}
+                        {nom.paidVotes > 0 && (
+                          <span className="ml-1 text-[10px] bg-blue-100 text-blue-700 px-1.5 rounded">
+                            {nom.paidVotes} paid
+                          </span>
+                        )}
                       </div>
                     );
                   })}
