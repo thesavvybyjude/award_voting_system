@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useVote } from "@/contexts/VoteContext";
 import type { VoteSelection } from "@/types";
-import { VOTE_PRICE_NAIRA, ENABLE_PAYSTACK, ENABLE_FLUTTERWAVE, ENABLE_TRANSFER, BANK_TRANSFER_DETAILS, WHATSAPP_VERIFY_NUMBER } from "@/lib/awards.config";
+import { VOTE_PRICE_NAIRA, ENABLE_PAYSTACK, ENABLE_FLUTTERWAVE, ENABLE_TRANSFER, BANK_TRANSFER_DETAILS, WHATSAPP_VERIFY_NUMBER, isFreeCategory } from "@/lib/awards.config";
 import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import { generateReference as generateFwReference } from "@/lib/flutterwave";
 import { openPaystackPopup, generateReference as generatePsReference } from "@/lib/paystack";
@@ -28,6 +28,13 @@ export default function SummaryPage() {
 
   const totalVotes = getTotalVotes();
   const totalAmountNaira = getTotalAmount() / 100;
+
+  const freeSelections = selections.filter(s => isFreeCategory(s.categoryId));
+  const paidSelections = selections.filter(s => !isFreeCategory(s.categoryId));
+  const freeVotesCount = freeSelections.reduce((sum, s) => sum + s.votes, 0);
+  const paidVotesCount = paidSelections.reduce((sum, s) => sum + s.votes, 0);
+  const hasOnlyFreeVotes = freeSelections.length > 0 && paidSelections.length === 0;
+  const hasPaidVotes = paidSelections.length > 0;
 
   const enabledProviders = useMemo<Provider[]>(() => {
     const providers: Provider[] = [];
@@ -109,6 +116,36 @@ export default function SummaryPage() {
         return verifyPayment(data, attempt + 1);
       }
       setToast({ message: "Network error. Ref: " + data.reference, type: "error" });
+      setIsProcessing(false);
+    }
+  };
+
+  const handleSubmitFreeVotes = async () => {
+    if (freeSelections.length === 0) return;
+    setIsProcessing(true);
+
+    try {
+      const res = await fetch("/api/verify-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reference: `FREE-${Date.now()}`,
+          transactionId: "FREE",
+          provider: "free",
+          selections: freeSelections,
+          skipVerification: true,
+        }),
+      });
+      const response = await res.json();
+      if (response.success) {
+        clearSelections();
+        router.push(`/vote/success?ref=FREE-${Date.now()}`);
+      } else {
+        setToast({ message: "Failed to submit votes: " + response.error, type: "error" });
+        setIsProcessing(false);
+      }
+    } catch {
+      setToast({ message: "Network error", type: "error" });
       setIsProcessing(false);
     }
   };
@@ -420,102 +457,149 @@ export default function SummaryPage() {
       <div className="scroll-area px-5 pb-8">
         <div className="total-strip mt-4 mb-5 animate-fade-in">
           <div>
-            <div className="total-strip-amount">₦{totalAmountNaira.toLocaleString()}</div>
+            <div className="total-strip-amount">
+              {hasOnlyFreeVotes ? "Free" : `₦${totalAmountNaira.toLocaleString()}`}
+            </div>
           </div>
           <div className="text-right">
             <div className="total-strip-stat">Votes</div>
             <div className="total-strip-stat-val">{totalVotes}</div>
-            <div className="total-strip-stat mt-1">Rate</div>
-            <div className="total-strip-stat-val">₦{VOTE_PRICE_NAIRA}/vote</div>
+            {!hasOnlyFreeVotes && (
+              <>
+                <div className="total-strip-stat mt-1">Rate</div>
+                <div className="total-strip-stat-val">₦{VOTE_PRICE_NAIRA}/vote</div>
+              </>
+            )}
+            {hasOnlyFreeVotes && (
+              <>
+                <div className="total-strip-stat mt-1">Type</div>
+                <div className="total-strip-stat-val">Free</div>
+              </>
+            )}
           </div>
         </div>
 
-        {selections.map((sel, i) => (
-          <div key={`${sel.categoryId}-${sel.nomineeId}`} className="srow animate-fade-in" style={{ animationDelay: `${i * 0.04}s` }}>
-            <div className="srow-cat">{sel.categoryName}</div>
-            <div className="flex items-center">
-              <span className="srow-nominee">{sel.nomineeName}</span>
-              <Link href="/vote" className="srow-change">Change</Link>
+        {selections.map((sel, i) => {
+          const isFree = isFreeCategory(sel.categoryId);
+          return (
+            <div key={`${sel.categoryId}-${sel.nomineeId}`} className="srow animate-fade-in" style={{ animationDelay: `${i * 0.04}s` }}>
+              <div className="srow-cat">
+                {sel.categoryName}
+                {isFree && <span className="ml-2 text-[9px] bg-green-100 text-green-700 px-1 rounded">Free</span>}
+              </div>
+              <div className="flex items-center">
+                <span className="srow-nominee">{sel.nomineeName}</span>
+                <Link href="/vote" className="srow-change">Change</Link>
+              </div>
+              <div className="srow-bottom">
+                <span className="srow-votes">{sel.votes} vote{sel.votes !== 1 ? "s" : ""}</span>
+                <span className="srow-cost">{isFree ? "Free" : `₦${(sel.votes * VOTE_PRICE_NAIRA).toLocaleString()}`}</span>
+              </div>
             </div>
-            <div className="srow-bottom">
-              <span className="srow-votes">{sel.votes} vote{sel.votes !== 1 ? "s" : ""}</span>
-              <span className="srow-cost">₦{(sel.votes * VOTE_PRICE_NAIRA).toLocaleString()}</span>
-            </div>
-          </div>
-        ))}
+          );
+        })}
 
         <div className="pay-summary mt-5 mb-4 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-          <div className="pay-row">
-            <span>Subtotal ({totalVotes} votes)</span>
-            <span>₦{totalAmountNaira.toLocaleString()}</span>
-          </div>
-          <div className="pay-row">
-            <span>Processing fee</span>
-            <span>₦0</span>
-          </div>
-          <div className="pay-sep" />
-          <div className="pay-row pay-total">
-            <span>Total</span>
-            <span>₦{totalAmountNaira.toLocaleString()}</span>
-          </div>
-        </div>
-
-        <div className="provider-selector mb-4 animate-fade-in" style={{ animationDelay: "0.15s" }}>
-          <label className="text-[13px] font-medium text-ink-muted mb-2 block">Select Payment Method</label>
-          <div className="provider-grid">
-            <button
-              onClick={() => ENABLE_PAYSTACK && setSelectedProvider("paystack")}
-              disabled={!ENABLE_PAYSTACK}
-              className={`provider-btn paystack ${selectedProvider === "paystack" ? "active" : ""} ${!ENABLE_PAYSTACK ? "disabled" : ""}`}
-            >
-              <span className="provider-icon">{ENABLE_PAYSTACK ? "💳" : "🔒"}</span>
-              <span>{ENABLE_PAYSTACK ? "Card" : "Card"}</span>
-            </button>
-            <button
-              onClick={() => ENABLE_FLUTTERWAVE && setSelectedProvider("flutterwave")}
-              disabled={!ENABLE_FLUTTERWAVE}
-              className={`provider-btn flutterwave ${selectedProvider === "flutterwave" ? "active" : ""} ${!ENABLE_FLUTTERWAVE ? "disabled" : ""}`}
-            >
-              <span className="provider-icon">{ENABLE_FLUTTERWAVE ? "⚡" : "🔒"}</span>
-              <span>{ENABLE_FLUTTERWAVE ? "Flutterwave" : "Flutterwave"}</span>
-            </button>
-            <button
-              onClick={() => ENABLE_TRANSFER && setSelectedProvider("transfer")}
-              disabled={!ENABLE_TRANSFER}
-              className={`provider-btn transfer ${selectedProvider === "transfer" ? "active" : ""} ${!ENABLE_TRANSFER ? "disabled" : ""}`}
-            >
-              <span className="provider-icon">{ENABLE_TRANSFER ? "🏦" : "🔒"}</span>
-              <span>Transfer</span>
-            </button>
-          </div>
-          {enabledProviders.length === 0 && (
-            <p className="text-[12px] text-error mt-2 text-center">No payment methods available. Please contact support.</p>
+          {hasOnlyFreeVotes ? (
+            <div className="pay-row">
+              <span>Free Votes ({freeVotesCount})</span>
+              <span>Free</span>
+            </div>
+          ) : (
+            <>
+              {freeVotesCount > 0 && (
+                <div className="pay-row">
+                  <span>Free Votes ({freeVotesCount})</span>
+                  <span>Free</span>
+                </div>
+              )}
+              <div className="pay-row">
+                <span>Subtotal ({paidVotesCount} votes)</span>
+                <span>₦{totalAmountNaira.toLocaleString()}</span>
+              </div>
+              <div className="pay-row">
+                <span>Processing fee</span>
+                <span>₦0</span>
+              </div>
+              <div className="pay-sep" />
+              <div className="pay-row pay-total">
+                <span>Total</span>
+                <span>₦{totalAmountNaira.toLocaleString()}</span>
+              </div>
+            </>
           )}
         </div>
+
+        {!hasOnlyFreeVotes && (
+          <div className="provider-selector mb-4 animate-fade-in" style={{ animationDelay: "0.15s" }}>
+            <label className="text-[13px] font-medium text-ink-muted mb-2 block">Select Payment Method</label>
+            <div className="provider-grid">
+              <button
+                onClick={() => ENABLE_PAYSTACK && setSelectedProvider("paystack")}
+                disabled={!ENABLE_PAYSTACK}
+                className={`provider-btn paystack ${selectedProvider === "paystack" ? "active" : ""} ${!ENABLE_PAYSTACK ? "disabled" : ""}`}
+              >
+                <span className="provider-icon">{ENABLE_PAYSTACK ? "💳" : "🔒"}</span>
+                <span>{ENABLE_PAYSTACK ? "Card" : "Card"}</span>
+              </button>
+              <button
+                onClick={() => ENABLE_FLUTTERWAVE && setSelectedProvider("flutterwave")}
+                disabled={!ENABLE_FLUTTERWAVE}
+                className={`provider-btn flutterwave ${selectedProvider === "flutterwave" ? "active" : ""} ${!ENABLE_FLUTTERWAVE ? "disabled" : ""}`}
+              >
+                <span className="provider-icon">{ENABLE_FLUTTERWAVE ? "⚡" : "🔒"}</span>
+                <span>{ENABLE_FLUTTERWAVE ? "Flutterwave" : "Flutterwave"}</span>
+              </button>
+              <button
+                onClick={() => ENABLE_TRANSFER && setSelectedProvider("transfer")}
+                disabled={!ENABLE_TRANSFER}
+                className={`provider-btn transfer ${selectedProvider === "transfer" ? "active" : ""} ${!ENABLE_TRANSFER ? "disabled" : ""}`}
+              >
+                <span className="provider-icon">{ENABLE_TRANSFER ? "🏦" : "🔒"}</span>
+                <span>Transfer</span>
+              </button>
+            </div>
+            {enabledProviders.length === 0 && (
+              <p className="text-[12px] text-error mt-2 text-center">No payment methods available. Please contact support.</p>
+            )}
+          </div>
+        )}
 
         <div className="anon-note mb-5 animate-fade-in" style={{ animationDelay: "0.25s" }}>
           <i className="ti ti-lock" style={{ fontSize: 14 }} />
           <span>Your vote is anonymous. No personal data is collected.</span>
         </div>
 
-        <button
-          onClick={handlePayment}
-          disabled={isProcessing || !selectedProvider}
-          className="btn-flutterwave mb-3 animate-fade-in"
-          style={{ animationDelay: "0.3s" }}
-          id="proceed-payment-btn"
-        >
-          {isProcessing ? (
-            "Processing…"
-          ) : (
-            <>
-              <i className="ti ti-lock" style={{ fontSize: 14 }} />
-              {selectedProvider === "transfer" 
-                ? `Pay ₦${totalAmountNaira.toLocaleString()} via Transfer` 
-                : `Pay ₦${totalAmountNaira.toLocaleString()} with ${providerLabel}`}
-            </>
-          )}
-        </button>
+        {hasOnlyFreeVotes ? (
+          <button
+            onClick={handleSubmitFreeVotes}
+            disabled={isProcessing}
+            className="btn-flutterwave mb-3 animate-fade-in"
+            style={{ animationDelay: "0.3s" }}
+            id="submit-free-votes-btn"
+          >
+            {isProcessing ? "Submitting…" : "Submit Free Votes"}
+          </button>
+) : (
+          <button
+            onClick={handlePayment}
+            disabled={isProcessing || !selectedProvider}
+            className="btn-flutterwave mb-3 animate-fade-in"
+            style={{ animationDelay: "0.3s" }}
+            id="proceed-payment-btn"
+          >
+            {isProcessing ? (
+              "Processing…"
+            ) : (
+              <>
+                <i className="ti ti-lock" style={{ fontSize: 14 }} />
+                {selectedProvider === "transfer" 
+                  ? `Pay ₦${totalAmountNaira.toLocaleString()} via Transfer` 
+                  : `Pay ₦${totalAmountNaira.toLocaleString()} with ${providerLabel}`}
+              </>
+            )}
+          </button>
+        )}
 
         <Link href="/vote" className="btn-outline w-full justify-center">
           ← Edit votes

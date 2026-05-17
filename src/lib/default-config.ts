@@ -13,7 +13,7 @@ export const EVENT_TAGLINE = "Vote for Your Favorites";
 // Payment Provider Toggles
 export const ENABLE_PAYSTACK = false;
 export const ENABLE_FLUTTERWAVE = true;
-export const ENABLE_TRANSFER = true;
+export const ENABLE_TRANSFER = false;
 
 // Bank Transfer Details
 export const BANK_TRANSFER_DETAILS = {

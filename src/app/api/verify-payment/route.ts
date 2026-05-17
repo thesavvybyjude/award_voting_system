@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { VOTE_PRICE_NAIRA } from "@/lib/awards.config";
 import type { VoteSelection } from "@/types";
 
-type Provider = "paystack" | "flutterwave";
+type Provider = "paystack" | "flutterwave" | "free";
 
 type VerifyResult = { success: true; data?: unknown; error?: string } | { success: false; data?: unknown; error: string };
 
@@ -99,8 +99,12 @@ export async function POST(req: Request) {
 
     let verifyResult: VerifyResult = { success: true };
 
-    // Skip verification if Flutterwave already confirmed success
-    if (!skipVerification) {
+    // Handle free votes (no payment verification needed)
+    if (paymentProvider === "free") {
+      console.log("Processing free votes - no payment verification needed");
+      verifyResult = { success: true };
+    } else if (!skipVerification) {
+      // Skip verification if Flutterwave already confirmed success
       if (paymentProvider === "paystack") {
         verifyResult = await verifyPaystack(reference, expectedAmountNaira);
       } else {
@@ -155,14 +159,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true, transactionId: existing.data.id });
     }
 
+    const isFreeVotes = paymentProvider === "free";
+    const amountTotal = isFreeVotes ? 0 : expectedAmountNaira * 100;
+
     const { data: transaction, error: txError } = await supabase
       .from("transactions")
       .insert({
         reference,
-        amount_total: expectedAmountNaira * 100,
+        amount_total: amountTotal,
         total_votes: totalVotes,
         status: "success",
-        payment_provider: paymentProvider,
+        payment_provider: isFreeVotes ? "free" : paymentProvider,
         paystack_response: verifyResult.data,
       })
       .select("id")

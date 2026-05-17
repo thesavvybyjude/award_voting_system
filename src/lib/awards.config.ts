@@ -44,6 +44,18 @@ export const ENABLE_PAYSTACK = DEFAULT_ENABLE_PAYSTACK;
 export const ENABLE_FLUTTERWAVE = DEFAULT_ENABLE_FLUTTERWAVE;
 export const ENABLE_TRANSFER = DEFAULT_ENABLE_TRANSFER;
 
+export const FREE_AWARD_CATEGORIES = [
+  "sportsman",
+  "sportswoman",
+  "best-duo",
+  "always-late-award",
+  "class-comedian",
+];
+
+export function isFreeCategory(categoryId: string): boolean {
+  return FREE_AWARD_CATEGORIES.includes(categoryId);
+}
+
 // Bank transfer - use default-config.ts only
 export const BANK_TRANSFER_DETAILS = DEFAULT_BANK_DETAILS;
 
