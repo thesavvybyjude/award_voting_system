@@ -129,9 +129,9 @@ export default function SummaryPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          reference: `FREE-${Date.now()}`,
-          transactionId: "FREE",
-          provider: "free",
+          reference: `MANUAL-${Date.now()}`,
+          transactionId: "MANUAL",
+          provider: "manual",
           selections: freeSelections,
           skipVerification: true,
         }),
