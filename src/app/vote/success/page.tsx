@@ -2,7 +2,6 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
-import Link from "next/link";
 
 interface TransactionDetails {
   reference: string;
@@ -80,7 +79,9 @@ function SuccessContent() {
             </div>
             <div className="receipt-row">
               <span className="receipt-label">Amount</span>
-              <span className="receipt-value">₦{(details.totalAmount / 100).toLocaleString()}</span>
+              <span className="receipt-value">
+                {details.totalAmount === 0 ? "Free" : `₦${(details.totalAmount / 100).toLocaleString()}`}
+              </span>
             </div>
             {details.votes?.map((v, i) => (
               <div key={i} className="receipt-row">
@@ -92,19 +93,7 @@ function SuccessContent() {
         </div>
       ) : null}
 
-      {/* Actions */}
-      <div className="mt-6 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-        <div className="flex flex-col gap-3 mt-6 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-          <Link href="/vote" className="btn-outline">
-            <i className="ti ti-refresh" style={{ fontSize: 14 }} />
-            Vote again
-          </Link>
-          <Link href="/" className="btn-outline-secondary">
-            <i className="ti ti-home" style={{ fontSize: 14 }} />
-            Home
-          </Link>
-        </div>
-      </div>
+      
     </div>
   );
 }
