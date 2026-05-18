@@ -50,6 +50,7 @@ export const FREE_AWARD_CATEGORIES = [
   "best-duo",
   "always-late-award",
   "class-comedian",
+  "most-dedicated-students",
 ];
 
 export function isFreeCategory(categoryId: string): boolean {
