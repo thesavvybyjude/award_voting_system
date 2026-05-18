@@ -305,4 +305,14 @@ export const awardsConfig: CategoryConfig[] = [
       { id: "fcs-3", name: "Yakubu Zainab" },
     ],
   },
+  {
+    id: "most-dedicated-students",
+    name: "Most dedicated students award",
+    type: "single",
+    displayOrder: 23,
+    nominees: [
+      { id: "mds-1", name: "Kolawole Toba" },
+      { id: "mds-2", name: "Abdallah Abdallah" },
+    ],
+  },
 ];

@@ -4,30 +4,31 @@
 -- ╚══════════════════════════════════════════════════════════════╝
 
 -- Categories
-INSERT INTO categories (id, name, type, emoji, display_order) VALUES
-  ('most-popular-female', 'Most Popular Female', 'single', '⭐', 1),
-  ('most-popular-male', 'Most Popular Male', 'single', '🌟', 2),
-  ('most-social-female', 'Most Social Female', 'single', '🦋', 3),
-  ('most-social-male', 'Most Social Male', 'single', '🗣️', 4),
-  ('best-duo', 'Best Duo', 'duo', '👯', 5),
-  ('most-confident-female', 'Most Confident Female', 'single', '👑', 6),
-  ('most-confident-male', 'Most Confident Male', 'single', '🦁', 7),
-  ('best-dressed-male', 'Best Dressed Male', 'single', '👔', 8),
-  ('best-dressed-female', 'Best Dressed Female', 'single', '👗', 9),
-  ('class-comedian', 'Class Comedian', 'single', '😂', 10),
-  ('beauty-with-brains-female', 'Beauty with Brains (Female)', 'single', '🧠', 11),
-  ('funs-with-brains', 'Funs with Brains', 'single', '💡', 12),
-  ('always-late-award', 'Always Late Award', 'single', '⏰', 13),
-  ('most-entrepreneurial-female', 'Most Entrepreneurial Female', 'single', '💼', 14),
-  ('most-entrepreneurial-male', 'Most Entrepreneurial Male', 'single', '🚀', 15),
-  ('future-leader-award', 'Future Leader Award', 'single', '🌍', 16),
-  ('most-talented', 'Most Talented', 'single', '🎨', 17),
-  ('music-icon', 'Music Icon', 'single', '🎵', 18),
-  ('most-influential', 'Most Influential', 'single', '🔥', 19),
-  ('sportswoman', 'Sportswoman', 'single', '🏃‍♀️', 20),
-  ('sportsman', 'Sportsman', 'single', '🏃‍♂️', 21),
-  ('face-of-computer-science', 'Face of Computer Science Department', 'single', '💻', 22)
-ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, type = EXCLUDED.type, emoji = EXCLUDED.emoji, display_order = EXCLUDED.display_order;
+INSERT INTO categories (id, name, type, display_order) VALUES
+  ('most-popular-female', 'Most Popular Female', 'single', 1),
+  ('most-popular-male', 'Most Popular Male', 'single', 2),
+  ('most-social-female', 'Most Social Female', 'single', 3),
+  ('most-social-male', 'Most Social Male', 'single', 4),
+  ('best-duo', 'Best Duo', 'duo', 5),
+  ('most-confident-female', 'Most Confident Female', 'single', 6),
+  ('most-confident-male', 'Most Confident Male', 'single', 7),
+  ('best-dressed-male', 'Best Dressed Male', 'single', 8),
+  ('best-dressed-female', 'Best Dressed Female', 'single', 9),
+  ('class-comedian', 'Class Comedian', 'single', 10),
+  ('beauty-with-brains-female', 'Beauty with Brains (Female)', 'single', 11),
+  ('funs-with-brains', 'Funs with Brains', 'single', 12),
+  ('always-late-award', 'Always Late Award', 'single', 13),
+  ('most-entrepreneurial-female', 'Most Entrepreneurial Female', 'single', 14),
+  ('most-entrepreneurial-male', 'Most Entrepreneurial Male', 'single', 15),
+  ('future-leader-award', 'Future Leader Award', 'single', 16),
+  ('most-talented', 'Most Talented', 'single', 17),
+  ('music-icon', 'Music Icon', 'single', 18),
+  ('most-influential', 'Most Influential', 'single', 19),
+  ('sportswoman', 'Sportswoman', 'single', 20),
+  ('sportsman', 'Sportsman', 'single', 21),
+  ('face-of-computer-science', 'Face of Computer Science Department', 'single', 22),
+  ('most-dedicated-students', 'Most dedicated students award', 'single', 23)
+ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, type = EXCLUDED.type, display_order = EXCLUDED.display_order;
 
 -- Nominees
 INSERT INTO nominees (id, category_id, name) VALUES
@@ -95,5 +96,7 @@ INSERT INTO nominees (id, category_id, name) VALUES
   ('sm-3', 'sportsman', 'Adum Amarpepe Vanderfan'),
   ('fcs-1', 'face-of-computer-science', 'Abdallah Abdallah'),
   ('fcs-2', 'face-of-computer-science', 'Kolawole Toba'),
-  ('fcs-3', 'face-of-computer-science', 'Yakubu Zainab')
+  ('fcs-3', 'face-of-computer-science', 'Yakubu Zainab'),
+  ('mds-1', 'most-dedicated-students', 'Kolawole Toba'),
+  ('mds-2', 'most-dedicated-students', 'Abdallah Abdallah')
 ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, category_id = EXCLUDED.category_id;
