@@ -156,6 +156,45 @@ export default function ResultsPage() {
 
   if (!authenticated) return <PinGate onAuthenticated={(r) => { setRole(r); setAuthenticated(true); }} />;
 
+  // ── Supreme-only gate ────────────────────────────────────────────────────────
+  if (role !== "supreme") {
+    return (
+      <div className="min-h-screen bg-surface flex flex-col items-center justify-center px-6 text-center">
+        <div style={{ fontSize: 48, marginBottom: 16 }}>🛡️</div>
+        <div
+          style={{
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: "0.14em",
+            textTransform: "uppercase",
+            color: "#ef4444",
+            background: "rgba(239,68,68,0.1)",
+            border: "1px solid rgba(239,68,68,0.2)",
+            borderRadius: 20,
+            padding: "4px 14px",
+            marginBottom: 20,
+          }}
+        >
+          Access Restricted
+        </div>
+        <h1 className="text-[24px] font-semibold text-ink mb-3" style={{ letterSpacing: "-0.01em" }}>
+          Admin Supreme Only
+        </h1>
+        <p className="text-[13px] text-ink-muted max-w-[260px] leading-relaxed mb-8">
+          The full results are exclusively accessible to the <strong>Admin Supreme</strong>. 
+          Your current role does not have permission to view this page.
+        </p>
+        <button
+          onClick={() => { sessionStorage.removeItem("admin-pin"); sessionStorage.removeItem("admin-role"); window.location.reload(); }}
+          className="btn-dark max-w-[220px]"
+        >
+          <i className="ti ti-lock" style={{ fontSize: 14 }} />
+          <span>Switch Account</span>
+        </button>
+      </div>
+    );
+  }
+
   return (
     <>
       <style>{`

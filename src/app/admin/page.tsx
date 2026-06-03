@@ -163,14 +163,16 @@ export default function AdminDashboard() {
 
       {/* Admin Tabs */}
       <div className="atabs">
-        <button className="atab on">
+        <Link href="/admin" className="atab on">
           <i className="ti ti-layout-dashboard" />
           <span>Overview</span>
-        </button>
-        <Link href="/admin/results" className="atab">
-          <i className="ti ti-trophy" />
-          <span>Results</span>
         </Link>
+        {role === "supreme" && (
+          <Link href="/admin/results" className="atab">
+            <i className="ti ti-trophy" />
+            <span>Results</span>
+          </Link>
+        )}
         {role === "supreme" && (
           <Link href="/admin/pending" className="atab">
             <i className="ti ti-file-check" />
