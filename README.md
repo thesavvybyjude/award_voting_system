@@ -214,4 +214,7 @@ src/
 
 ## License
 
-MIT
+[MIT](LICENSE)
+---
+
+Built by [Jude Thompson](https://github.com/thesavvybyjude)
